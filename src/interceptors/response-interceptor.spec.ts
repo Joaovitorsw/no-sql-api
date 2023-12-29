@@ -82,7 +82,9 @@ describe.only('ResponseInterceptor', () => {
   });
   it('should handle exception errors', () => {
     const firstRequest = new Observable((observer) => {
-      observer.error(new Error('Error occurred'));
+      observer.error([
+        { property: 'name', message: 'name deve ser uma string' },
+      ]);
     });
 
     callHandlerMock.handle.mockReturnValue(firstRequest);

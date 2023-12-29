@@ -8,12 +8,12 @@ import { Cat } from '../../schemas/cat.schema';
 export class CatsService {
   constructor(@InjectModel(Cat.name) private catModel: Model<Cat>) {}
 
-  async create(createCatDto: CreateCatDto): Promise<Cat> {
+  create(createCatDto: CreateCatDto): Promise<Cat> {
     const createdCat = new this.catModel(createCatDto);
     return createdCat.save();
   }
 
-  async findAll(): Promise<Cat[]> {
+  findAll(): Promise<Cat[]> {
     return this.catModel.find().exec();
   }
 }
