@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { AppController } from './app.controller';
+import { AppController } from './controllers/app/app.controller';
 import { Cat, CatSchema } from './schemas/cat.schema';
-import { AppService } from './services/app.service';
-import { CatsService } from './services/cats.service';
+import { AppService } from './services/app/app.service';
+import { CatsService } from './services/cats/cats.service';
 
 @Module({
   imports: [

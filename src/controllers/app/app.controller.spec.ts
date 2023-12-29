@@ -1,9 +1,9 @@
 import { getModelToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
+import { Cat } from '../../schemas/cat.schema';
+import { AppService } from '../../services/app/app.service';
+import { CatsService } from '../../services/cats/cats.service';
 import { AppController } from './app.controller';
-import { Cat } from './schemas/cat.schema';
-import { AppService } from './services/app.service';
-import { CatsService } from './services/cats.service';
 
 describe('AppController', () => {
   let appController: AppController;
