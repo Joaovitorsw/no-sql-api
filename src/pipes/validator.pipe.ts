@@ -1,9 +1,7 @@
-import { BadRequestException, ValidationPipe } from '@nestjs/common';
+import { ValidationPipe } from '@nestjs/common';
 
 export const APP_VALIDATION_PIPE = new ValidationPipe({
   exceptionFactory: (errors) => {
-    console.log(errors);
-
     const result = errors.map((error) => {
       const [key] = Object.keys(error.constraints);
       error.constraints[key] = error.constraints[key]
@@ -17,7 +15,7 @@ export const APP_VALIDATION_PIPE = new ValidationPipe({
         message: error.constraints[key],
       };
     });
-    return new BadRequestException(result);
+    return result;
   },
   stopAtFirstError: true,
 });
