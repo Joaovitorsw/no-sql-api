@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { AppController } from './controllers/app/app.controller';
+import { CatsController } from './controllers/cats/cats.controller';
 import { Cat, CatSchema } from './schemas/cat.schema';
 import { AppService } from './services/app/app.service';
 import { CatsService } from './services/cats/cats.service';
@@ -14,7 +14,7 @@ import { CatsService } from './services/cats/cats.service';
       }),
     }),
   ],
-  controllers: [AppController],
+  controllers: [CatsController],
   exports: [AppService, CatsService],
   providers: [AppService, CatsService],
 })
