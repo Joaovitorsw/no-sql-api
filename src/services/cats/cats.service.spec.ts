@@ -1,7 +1,7 @@
 import { getModelToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Types } from 'mongoose';
-import { CreateCatDto } from 'src/models/create-cat.dto';
+import { CatDto } from '../../models/cat.dto';
 import { Cat } from '../../schemas/cat.schema';
 import {
   ErrorDomainService,
@@ -37,7 +37,13 @@ describe('CatsService', () => {
   });
 
   it('should create a new cat', async () => {
-    const catDto: CreateCatDto = { name: 'Test', age: 1, breed: 'Breed' };
+    const catDto: CatDto = {
+      name: 'Test',
+      age: 1,
+      breed: 'Breed',
+      createAt: new Date().toISOString(),
+      updateAt: new Date().toISOString(),
+    };
 
     jest.spyOn(CatModel, 'create').mockImplementationOnce(() => ({
       ...catDto,
@@ -50,7 +56,13 @@ describe('CatsService', () => {
     expect(result).toEqual(catDto);
   });
   it('should return domain validation VALIDATION_ERROR', async () => {
-    const catDto: CreateCatDto = { name: 'Test', age: 0, breed: 'Breed' };
+    const catDto: CatDto = {
+      name: 'Test',
+      age: 0,
+      breed: 'Breed',
+      createAt: new Date().toISOString(),
+      updateAt: new Date().toISOString(),
+    };
 
     await service.create(catDto);
 
@@ -62,7 +74,13 @@ describe('CatsService', () => {
     ]);
   });
   it('should return domain validation ALREADY_EXISTS', async () => {
-    const catDto: CreateCatDto = { name: 'Test', age: 15, breed: 'Breed' };
+    const catDto: CatDto = {
+      name: 'Test',
+      age: 15,
+      breed: 'Breed',
+      createAt: new Date().toISOString(),
+      updateAt: new Date().toISOString(),
+    };
 
     jest.spyOn(CatModel, 'findOne').mockImplementationOnce(() => ({
       exec: jest.fn().mockResolvedValue({

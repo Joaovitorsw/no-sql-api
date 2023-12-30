@@ -1,7 +1,7 @@
 import { getModelToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Types } from 'mongoose';
-import { CreateCatDto } from '../../models/create-cat.dto';
+import { CatDto } from '../../models/cat.dto';
 import { Cat, CatDocument } from '../../schemas/cat.schema';
 import { CatsService } from '../../services/cats/cats.service';
 import { ErrorDomainService } from '../../services/log/error-domain.service';
@@ -59,9 +59,9 @@ describe('CatsController', () => {
   });
 
   it('should create and return a cat', async () => {
-    const createCatDto = new CreateCatDto('Test Cat', 3, 'Test Breed');
+    const catDto = new CatDto('Test Cat', 3, 'Test Breed');
     const createdCat = {
-      ...createCatDto,
+      ...catDto,
       _id: new Types.ObjectId('6590214c754d1e36278d8553'),
       __v: 0,
     } as CatDocument;
@@ -70,6 +70,6 @@ describe('CatsController', () => {
       .spyOn(catsService, 'create')
       .mockImplementation(async () => createdCat);
 
-    expect(await appController.createCat(createCatDto)).toEqual(createdCat);
+    expect(await appController.createCat(catDto)).toEqual(createdCat);
   });
 });

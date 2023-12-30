@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { likeOperator } from '../../helpers/like';
-import { CreateCatDto } from '../../models/create-cat.dto';
+import { CatDto } from '../../models/cat.dto';
 import { Cat, CatDocument } from '../../schemas/cat.schema';
 import {
   ErrorDomainService,
@@ -16,19 +16,26 @@ export class CatsService {
     private errorDomainService: ErrorDomainService,
   ) {}
 
-  async create(createCatDto: CreateCatDto): Promise<CatDocument> {
-    if (createCatDto.age <= 0) {
+  async create(catDto: CatDto): Promise<CatDocument> {
+    if (catDto.age <= 0) {
       this.errorDomainService.addError({
         type: eTypeDomainError.VALIDATION_ERROR,
         message: 'Não foi possivel criar o gato(a) com a idade 0',
       });
       return;
     }
-    const createdCat = new this.catModel(createCatDto);
+    const createdCat = new this.catModel({
+      ...catDto,
+      createAt: new Date().toISOString(),
+    });
 
     const cat = await this.catModel
       .findOne({
-        ...createCatDto,
+        $or: [
+          { name: catDto.name },
+          { name: catDto.name, breed: catDto.breed },
+          { name: catDto.name, breed: catDto.breed, age: catDto.age },
+        ],
       })
       .exec();
 
@@ -55,12 +62,53 @@ export class CatsService {
 
     return cat;
   }
-  async findAll(createCatDto?: Partial<CreateCatDto>): Promise<CatDocument[]> {
+  async update(catDto: CatDto): Promise<CatDocument> {
+    const cat = await this.catModel
+      .findOneAndUpdate(
+        {
+          _id: catDto._id,
+        },
+        {
+          ...catDto,
+          updateAt: new Date().toISOString(),
+        },
+        {
+          new: true,
+        },
+      )
+      .exec();
+
+    if (!cat) {
+      this.errorDomainService.addError({
+        type: eTypeDomainError.NOT_FOUND,
+        message: 'Não existe um gato(a) com esse id',
+      });
+    }
+
+    return cat;
+  }
+  async removeById(id: string | number | Types.ObjectId): Promise<CatDocument> {
+    const cat = await this.catModel
+      .findOneAndDelete({
+        _id: id,
+      })
+      .exec();
+
+    if (!cat) {
+      this.errorDomainService.addError({
+        type: eTypeDomainError.NOT_FOUND,
+        message: 'Não existe um gato(a) com esse id',
+      });
+    }
+
+    return cat;
+  }
+  async findAll(CatDto?: Partial<CatDto>): Promise<CatDocument[]> {
     const cats = await this.catModel
       .find({
-        ...createCatDto,
-        ...likeOperator(createCatDto, 'name'),
-        ...likeOperator(createCatDto, 'breed'),
+        ...CatDto,
+        ...likeOperator(CatDto, 'name'),
+        ...likeOperator(CatDto, 'breed'),
       })
       .exec();
 

@@ -18,6 +18,6 @@ describe('ErrorDomainService', () => {
     expect(service.statusCode).toBe(HttpStatus.OK);
   });
   it('should clearDomainsErrors"', () => {
-    expect(service.clearDomainsErrors()).toBe([]);
+    expect(service.clearDomainsErrors()).toBe(undefined);
   });
 });

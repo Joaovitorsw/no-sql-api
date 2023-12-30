@@ -1,15 +1,17 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
   Param,
   Post,
+  Put,
   Query,
 } from '@nestjs/common';
 import { Types } from 'mongoose';
-import { CreateCatDto } from '../../models/create-cat.dto';
+import { CatDto } from '../../models/cat.dto';
 import { CatDocument } from '../../schemas/cat.schema';
 import { CatsService } from '../../services/cats/cats.service';
 
@@ -19,7 +21,7 @@ export class CatsController {
 
   @Get()
   @HttpCode(HttpStatus.OK)
-  finAllCats(@Query() cat?: Partial<CreateCatDto>): Promise<CatDocument[]> {
+  finAllCats(@Query() cat?: Partial<CatDto>): Promise<CatDocument[]> {
     return this.catsService.findAll(cat);
   }
 
@@ -30,9 +32,21 @@ export class CatsController {
   ): Promise<CatDocument> {
     return this.catsService.findById(id);
   }
+  @Put()
+  @HttpCode(HttpStatus.OK)
+  async updateCat(@Body() cat: CatDto): Promise<CatDocument> {
+    return this.catsService.update(cat);
+  }
+  @Delete('/:id')
+  @HttpCode(HttpStatus.OK)
+  removeCat(
+    @Param('id') id: string | number | Types.ObjectId,
+  ): Promise<CatDocument> {
+    return this.catsService.removeById(id);
+  }
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  async createCat(@Body() cat: CreateCatDto): Promise<CatDocument> {
+  async createCat(@Body() cat: CatDto): Promise<CatDocument> {
     return this.catsService.create(cat);
   }
 }
