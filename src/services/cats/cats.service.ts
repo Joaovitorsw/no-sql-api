@@ -32,7 +32,6 @@ export class CatsService {
     const cat = await this.catModel
       .findOne({
         $or: [
-          { name: catDto.name },
           { name: catDto.name, breed: catDto.breed },
           { name: catDto.name, breed: catDto.breed, age: catDto.age },
         ],
