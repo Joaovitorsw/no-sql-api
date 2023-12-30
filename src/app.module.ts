@@ -4,6 +4,7 @@ import { CatsController } from './controllers/cats/cats.controller';
 import { Cat, CatSchema } from './schemas/cat.schema';
 import { AppService } from './services/app/app.service';
 import { CatsService } from './services/cats/cats.service';
+import { ErrorDomainService } from './services/log/error-domain.service';
 
 @Module({
   imports: [
@@ -15,7 +16,7 @@ import { CatsService } from './services/cats/cats.service';
     }),
   ],
   controllers: [CatsController],
-  exports: [AppService, CatsService],
-  providers: [AppService, CatsService],
+  exports: [AppService, CatsService, ErrorDomainService],
+  providers: [AppService, CatsService, ErrorDomainService],
 })
 export class AppModule {}

@@ -3,9 +3,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { CreateCatDto } from '../../models/create-cat.dto';
 import { Cat } from '../../schemas/cat.schema';
 import { CatsService } from '../../services/cats/cats.service';
+import { ErrorDomainService } from '../../services/log/error-domain.service';
 import { CatsController } from './cats.controller';
 
-describe('AppController', () => {
+describe('CatsController', () => {
   let appController: CatsController;
   let catsService: CatsService;
 
@@ -14,6 +15,7 @@ describe('AppController', () => {
       controllers: [CatsController],
       providers: [
         CatsService,
+        ErrorDomainService,
         { provide: getModelToken(Cat.name), useValue: jest.fn() },
       ],
     }).compile();
@@ -39,6 +41,7 @@ describe('AppController', () => {
 
     expect(await appController.finAllCats()).toBe(result);
   });
+
   it('should create and return a cat', async () => {
     const createCatDto = new CreateCatDto('Test Cat', 3, 'Test Breed');
     const createdCat = {

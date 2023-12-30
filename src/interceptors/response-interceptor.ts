@@ -8,12 +8,39 @@ import {
 } from '@nestjs/common';
 import { Observable, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
+import { ErrorDomainService } from '../services/log/error-domain.service';
+
+const STATUS_MESSAGES = {
+  [HttpStatus.OK]: 'Operação realizada com sucesso!',
+  [HttpStatus.CREATED]: 'Registro criado com sucesso!',
+  [HttpStatus.ACCEPTED]: 'Registro atualizado com sucesso!',
+  [HttpStatus.NO_CONTENT]: 'Registro excluído com sucesso!',
+  [HttpStatus.BAD_REQUEST]: 'Erro na requisição!',
+  [HttpStatus.UNAUTHORIZED]: 'Não autorizado!',
+  [HttpStatus.FORBIDDEN]: 'Acesso negado!',
+  [HttpStatus.NOT_FOUND]: 'Registro não encontrado!',
+  [HttpStatus.UNPROCESSABLE_ENTITY]: 'Erro de validação!',
+  [HttpStatus.INTERNAL_SERVER_ERROR]: 'Erro interno!',
+  [HttpStatus.NOT_IMPLEMENTED]: 'Não implementado!',
+  [HttpStatus.BAD_GATEWAY]: 'Erro de comunicação!',
+  [HttpStatus.SERVICE_UNAVAILABLE]: 'Serviço indisponível!',
+  [HttpStatus.GATEWAY_TIMEOUT]: 'Tempo de requisição esgotado!',
+};
 
 @Injectable()
-export class ResponseInterceptor implements NestInterceptor {
+export class ResponseInterceptor<T> implements NestInterceptor {
+  constructor(private errorDomain: ErrorDomainService) {
+    this.errorDomain = errorDomain;
+  }
   intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
     return next.handle().pipe(
-      map((res: unknown) => {
+      map((res: T) => {
+        if (this.errorDomain.errors.length > 0) {
+          this.errorHandler(this.errorDomain.errors, context);
+          this.errorDomain.clearDomainsErrors();
+          return;
+        }
+
         return this.responseHandler(res, context);
       }),
       catchError((err: HttpException) => {
@@ -22,34 +49,36 @@ export class ResponseInterceptor implements NestInterceptor {
     );
   }
 
-  errorHandler(exception: HttpException, context: ExecutionContext) {
+  errorHandler(
+    exception: HttpException | Array<string>,
+    context: ExecutionContext,
+  ) {
     const ctx = context.switchToHttp();
     const response = ctx.getResponse();
 
-    const status =
+    let status =
       exception instanceof HttpException
         ? exception.getStatus()
         : HttpStatus.INTERNAL_SERVER_ERROR;
 
+    status = this.errorDomain.statusCode ? this.errorDomain.statusCode : status;
+
     return response.status(status).json({
-      statusCode: status,
+      status,
       ...(exception instanceof Array
         ? { message: exception }
         : { message: exception.message }),
-      ...(exception instanceof HttpException
-        ? { data: exception.getResponse() }
-        : {}),
       success: false,
     });
   }
-  responseHandler(res: any, context: ExecutionContext) {
+  responseHandler(res: T, context: ExecutionContext) {
     const ctx = context.switchToHttp();
     const response = ctx.getResponse();
     const statusCode = response.statusCode;
 
     return {
       statusCode,
-      message: 'Operação realizada com sucesso!',
+      message: STATUS_MESSAGES[statusCode],
       data: res,
       success: true,
     };

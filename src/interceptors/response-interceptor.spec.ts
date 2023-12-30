@@ -1,19 +1,20 @@
 import { ExecutionContext, HttpException, HttpStatus } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Observable, of } from 'rxjs';
+import { ErrorDomainService } from '../services/log/error-domain.service';
 import { ResponseInterceptor } from './response-interceptor';
 
 describe.only('ResponseInterceptor', () => {
-  let interceptor: ResponseInterceptor;
+  let interceptor: ResponseInterceptor<unknown>;
   let executionContextMock: ExecutionContext;
   let callHandlerMock: { handle: jest.Mock };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [ResponseInterceptor],
+      providers: [ResponseInterceptor, ErrorDomainService],
     }).compile();
 
-    interceptor = module.get<ResponseInterceptor>(ResponseInterceptor);
+    interceptor = module.get<ResponseInterceptor<unknown>>(ResponseInterceptor);
 
     callHandlerMock = { handle: jest.fn() };
   });
@@ -72,9 +73,8 @@ describe.only('ResponseInterceptor', () => {
       .subscribe({
         error: (error) => {
           expect(error).toEqual({
-            statusCode: HttpStatus.BAD_REQUEST,
+            status: HttpStatus.BAD_REQUEST,
             message: 'Error occurred',
-            data: new HttpException('Error occurred', HttpStatus.BAD_REQUEST),
             success: false,
           });
         },
@@ -105,9 +105,13 @@ describe.only('ResponseInterceptor', () => {
       .subscribe({
         error: (error) => {
           expect(error).toEqual({
-            statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-            message: 'Error occurred',
-            data: new Error('Error occurred'),
+            status: HttpStatus.INTERNAL_SERVER_ERROR,
+            message: [
+              {
+                message: 'name deve ser uma string',
+                property: 'name',
+              },
+            ],
             success: false,
           });
         },

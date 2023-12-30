@@ -5,6 +5,7 @@ export type CatDocument = HydratedDocument<Cat>;
 
 @Schema({
   collection: 'cats',
+  autoIndex: true,
 })
 export class Cat {
   @Prop({ type: String, required: true })
