@@ -8,7 +8,10 @@ import {
 } from '@nestjs/common';
 import { Observable, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
-import { ErrorDomainService } from '../services/log/error-domain.service';
+import {
+  DomainError,
+  ErrorDomainService,
+} from '../services/log/error-domain.service';
 
 const STATUS_MESSAGES = {
   [HttpStatus.OK]: 'Operação realizada com sucesso!',
@@ -50,7 +53,7 @@ export class ResponseInterceptor<T> implements NestInterceptor {
   }
 
   errorHandler(
-    exception: HttpException | Array<string>,
+    exception: HttpException | Array<DomainError>,
     context: ExecutionContext,
   ) {
     const ctx = context.switchToHttp();

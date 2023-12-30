@@ -1,15 +1,25 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 
+export enum eTypeDomainError {
+  NOT_FOUND = 'NotFoundError',
+  ALREADY_EXISTS = 'AlreadyExistsError',
+  VALIDATION_ERROR = 'ValidationError',
+}
+
+export interface DomainError {
+  type: string;
+  message: string;
+}
 @Injectable()
 export class ErrorDomainService {
-  private _errors: string[];
+  private _errors: DomainError[];
   private _statusCode: HttpStatus = HttpStatus.BAD_REQUEST;
   constructor() {
     this._errors = [];
     this._statusCode = HttpStatus.BAD_REQUEST;
   }
 
-  addError(error: string) {
+  addError(error: DomainError) {
     this._errors.push(error);
   }
 
@@ -25,6 +35,6 @@ export class ErrorDomainService {
 
   clearDomainsErrors() {
     this._errors = [];
-    this._statusCode = null;
+    this._statusCode = HttpStatus.BAD_REQUEST;
   }
 }

@@ -4,7 +4,10 @@ import { Model } from 'mongoose';
 import { likeOperator } from 'src/helpers/like';
 import { CreateCatDto } from '../../models/create-cat.dto';
 import { Cat } from '../../schemas/cat.schema';
-import { ErrorDomainService } from '../log/error-domain.service';
+import {
+  ErrorDomainService,
+  eTypeDomainError,
+} from '../log/error-domain.service';
 
 @Injectable()
 export class CatsService {
@@ -14,41 +17,60 @@ export class CatsService {
   ) {}
 
   async create(createCatDto: CreateCatDto): Promise<Cat> {
-    const createdCat = new this.catModel(createCatDto);
-
     if (createCatDto.age <= 0) {
-      this.errorDomainService.addError(
-        'Não foi possivel criar o gato(a) com a idade 0',
-      );
+      this.errorDomainService.addError({
+        type: eTypeDomainError.VALIDATION_ERROR,
+        message: 'Não foi possivel criar o gato(a) com a idade 0',
+      });
       return;
     }
+    const createdCat = new this.catModel(createCatDto);
 
-    const hasCat = this.catModel
+    const cat = await this.catModel
       .findOne({
         ...createCatDto,
       })
       .exec();
 
-    if (await hasCat) {
-      this.errorDomainService.addError(
-        'Já existe um gato(a) com essas informações',
-      );
+    if (cat) {
+      this.errorDomainService.addError({
+        type: eTypeDomainError.ALREADY_EXISTS,
+        message: 'Já existe um gato(a) com essas informações',
+      });
       return;
     }
 
     return createdCat.save();
   }
 
-  findById(id: number): Promise<Cat> {
-    return this.catModel.findById(id).exec();
+  async findById(id: number): Promise<Cat> {
+    const cat = await this.catModel.findById(id).exec();
+
+    if (!cat) {
+      this.errorDomainService.addError({
+        type: eTypeDomainError.NOT_FOUND,
+        message: 'Não existe um gato(a) com esse id',
+      });
+    }
+
+    return cat;
   }
-  findAll(createCatDto?: Partial<CreateCatDto>): Promise<Cat[]> {
-    return this.catModel
+  async findAll(createCatDto?: Partial<CreateCatDto>): Promise<Cat[]> {
+    const cats = await this.catModel
       .find({
         ...createCatDto,
         ...likeOperator(createCatDto, 'name'),
         ...likeOperator(createCatDto, 'breed'),
       })
       .exec();
+
+    if (cats.length === 0) {
+      this.errorDomainService.addError({
+        type: eTypeDomainError.NOT_FOUND,
+        message: 'Não existe nenhum gato(a) com essas informações',
+      });
+    }
+
+    return cats;
   }
 }
