@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { likeOperator } from '../../helpers/like';
@@ -24,6 +24,7 @@ export class CatsService {
       });
       return;
     }
+
     const createdCat = new this.catModel({
       ...catDto,
       createAt: new Date().toISOString(),
@@ -58,6 +59,7 @@ export class CatsService {
         type: eTypeDomainError.NOT_FOUND,
         message: 'Não existe um gato(a) com esse id',
       });
+      this.errorDomainService.statusCode = HttpStatus.NOT_FOUND;
     }
 
     return cat;
@@ -83,6 +85,7 @@ export class CatsService {
         type: eTypeDomainError.NOT_FOUND,
         message: 'Não existe um gato(a) com esse id',
       });
+      this.errorDomainService.statusCode = HttpStatus.NOT_FOUND;
     }
 
     return cat;
@@ -99,6 +102,7 @@ export class CatsService {
         type: eTypeDomainError.NOT_FOUND,
         message: 'Não existe um gato(a) com esse id',
       });
+      this.errorDomainService.statusCode = HttpStatus.NOT_FOUND;
     }
 
     return cat;
@@ -117,6 +121,7 @@ export class CatsService {
         type: eTypeDomainError.NOT_FOUND,
         message: 'Não existe nenhum gato(a) com essas informações',
       });
+      this.errorDomainService.statusCode = HttpStatus.NOT_FOUND;
     }
 
     return cats;
