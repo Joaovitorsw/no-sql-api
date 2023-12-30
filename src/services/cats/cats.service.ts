@@ -27,7 +27,6 @@ export class CatsService {
 
     const createdCat = new this.catModel({
       ...catDto,
-      createAt: new Date().toISOString(),
     });
 
     const cat = await this.catModel
@@ -65,6 +64,8 @@ export class CatsService {
     return cat;
   }
   async update(catDto: CatDto): Promise<CatDocument> {
+    catDto.updateAt = new Date().toISOString();
+    delete catDto.createAt;
     const cat = await this.catModel
       .findOneAndUpdate(
         {
@@ -72,7 +73,6 @@ export class CatsService {
         },
         {
           ...catDto,
-          updateAt: new Date().toISOString(),
         },
         {
           new: true,
