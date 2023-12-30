@@ -1,4 +1,4 @@
-export function likeOperator<T>(value: Partial<T>, propertyName: string) {
+export function like<T>(value: Partial<T>, propertyName: string) {
   return value?.[propertyName]?.includes('LIKE=')
     ? {
         [propertyName]: {

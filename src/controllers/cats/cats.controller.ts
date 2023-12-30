@@ -34,7 +34,7 @@ export class CatsController {
   }
   @Put()
   @HttpCode(HttpStatus.OK)
-  async updateCat(@Body() cat: CatDto): Promise<CatDocument> {
+  updateCat(@Body() cat: CatDto): Promise<CatDocument> {
     return this.catsService.update(cat);
   }
   @Delete('/:id')
@@ -46,7 +46,7 @@ export class CatsController {
   }
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  async createCat(@Body() cat: CatDto): Promise<CatDocument> {
+  createCat(@Body() cat: CatDto): Promise<CatDocument> {
     return this.catsService.create(cat);
   }
 }

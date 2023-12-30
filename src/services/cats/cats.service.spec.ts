@@ -6,7 +6,7 @@ import { Cat } from '../../schemas/cat.schema';
 import {
   ErrorDomainService,
   eTypeDomainError,
-} from '../log/error-domain.service';
+} from '../error-domain/error-domain.service';
 import { CatsService } from './cats.service';
 
 class CatModel {

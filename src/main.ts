@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 import { AppModule } from './app.module';
 import { ResponseInterceptor } from './interceptors/response-interceptor';
 import { APP_VALIDATION_PIPE } from './pipes/validator.pipe';
-import { ErrorDomainService } from './services/log/error-domain.service';
+import { ErrorDomainService } from './services/error-domain/error-domain.service';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { cors: true });

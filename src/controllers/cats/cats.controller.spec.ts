@@ -4,7 +4,7 @@ import { Types } from 'mongoose';
 import { CatDto } from '../../models/cat.dto';
 import { Cat, CatDocument } from '../../schemas/cat.schema';
 import { CatsService } from '../../services/cats/cats.service';
-import { ErrorDomainService } from '../../services/log/error-domain.service';
+import { ErrorDomainService } from '../../services/error-domain/error-domain.service';
 import { CatsController } from './cats.controller';
 
 describe('CatsController', () => {

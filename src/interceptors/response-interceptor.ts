@@ -11,7 +11,7 @@ import { catchError, map } from 'rxjs/operators';
 import {
   DomainError,
   ErrorDomainService,
-} from '../services/log/error-domain.service';
+} from '../services/error-domain/error-domain.service';
 
 const STATUS_MESSAGES = {
   [HttpStatus.OK]: 'Operação realizada com sucesso!',

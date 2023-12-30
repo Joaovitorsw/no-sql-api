@@ -1,7 +1,7 @@
 import { ExecutionContext, HttpException, HttpStatus } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Observable, of } from 'rxjs';
-import { ErrorDomainService } from '../services/log/error-domain.service';
+import { ErrorDomainService } from '../services/error-domain/error-domain.service';
 import { ResponseInterceptor } from './response-interceptor';
 
 describe.only('ResponseInterceptor', () => {

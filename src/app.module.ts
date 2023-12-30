@@ -2,9 +2,8 @@ import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { CatsController } from './controllers/cats/cats.controller';
 import { Cat, CatSchema } from './schemas/cat.schema';
-import { AppService } from './services/app/app.service';
 import { CatsService } from './services/cats/cats.service';
-import { ErrorDomainService } from './services/log/error-domain.service';
+import { ErrorDomainService } from './services/error-domain/error-domain.service';
 
 @Module({
   imports: [
@@ -16,7 +15,7 @@ import { ErrorDomainService } from './services/log/error-domain.service';
     }),
   ],
   controllers: [CatsController],
-  exports: [AppService, CatsService, ErrorDomainService],
-  providers: [AppService, CatsService, ErrorDomainService],
+  exports: [CatsService, ErrorDomainService],
+  providers: [CatsService, ErrorDomainService],
 })
 export class AppModule {}

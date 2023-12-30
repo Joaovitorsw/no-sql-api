@@ -1,13 +1,13 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { likeOperator } from '../../helpers/like';
+import { like } from '../../helpers/like';
 import { CatDto } from '../../models/cat.dto';
 import { Cat, CatDocument } from '../../schemas/cat.schema';
 import {
   ErrorDomainService,
   eTypeDomainError,
-} from '../log/error-domain.service';
+} from '../error-domain/error-domain.service';
 
 @Injectable()
 export class CatsService {
@@ -106,12 +106,12 @@ export class CatsService {
 
     return cat;
   }
-  async findAll(CatDto?: Partial<CatDto>): Promise<CatDocument[]> {
+  async findAll(catDto?: Partial<CatDto>): Promise<CatDocument[]> {
     const cats = await this.catModel
       .find({
-        ...CatDto,
-        ...likeOperator(CatDto, 'name'),
-        ...likeOperator(CatDto, 'breed'),
+        ...catDto,
+        ...like(catDto, 'name'),
+        ...like(catDto, 'breed'),
       })
       .exec();
 
