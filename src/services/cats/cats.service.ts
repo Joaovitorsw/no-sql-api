@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { likeOperator } from 'src/helpers/like';
+import { Model, Types } from 'mongoose';
+import { likeOperator } from '../../helpers/like';
 import { CreateCatDto } from '../../models/create-cat.dto';
-import { Cat } from '../../schemas/cat.schema';
+import { Cat, CatDocument } from '../../schemas/cat.schema';
 import {
   ErrorDomainService,
   eTypeDomainError,
@@ -16,7 +16,7 @@ export class CatsService {
     private errorDomainService: ErrorDomainService,
   ) {}
 
-  async create(createCatDto: CreateCatDto): Promise<Cat> {
+  async create(createCatDto: CreateCatDto): Promise<CatDocument> {
     if (createCatDto.age <= 0) {
       this.errorDomainService.addError({
         type: eTypeDomainError.VALIDATION_ERROR,
@@ -43,7 +43,7 @@ export class CatsService {
     return createdCat.save();
   }
 
-  async findById(id: number): Promise<Cat> {
+  async findById(id: string | number | Types.ObjectId): Promise<CatDocument> {
     const cat = await this.catModel.findById(id).exec();
 
     if (!cat) {
@@ -55,7 +55,7 @@ export class CatsService {
 
     return cat;
   }
-  async findAll(createCatDto?: Partial<CreateCatDto>): Promise<Cat[]> {
+  async findAll(createCatDto?: Partial<CreateCatDto>): Promise<CatDocument[]> {
     const cats = await this.catModel
       .find({
         ...createCatDto,

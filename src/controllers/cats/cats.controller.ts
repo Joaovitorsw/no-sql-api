@@ -8,8 +8,9 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
+import { Types } from 'mongoose';
 import { CreateCatDto } from '../../models/create-cat.dto';
-import { Cat } from '../../schemas/cat.schema';
+import { CatDocument } from '../../schemas/cat.schema';
 import { CatsService } from '../../services/cats/cats.service';
 
 @Controller('cats')
@@ -18,18 +19,20 @@ export class CatsController {
 
   @Get()
   @HttpCode(HttpStatus.OK)
-  finAllCats(@Query() cat?: Partial<CreateCatDto>): Promise<Cat[]> {
+  finAllCats(@Query() cat?: Partial<CreateCatDto>): Promise<CatDocument[]> {
     return this.catsService.findAll(cat);
   }
 
   @Get('/:id')
   @HttpCode(HttpStatus.OK)
-  findCat(@Param('id') id: number): Promise<Cat> {
+  findCat(
+    @Param('id') id: string | number | Types.ObjectId,
+  ): Promise<CatDocument> {
     return this.catsService.findById(id);
   }
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  async createCat(@Body() cat: CreateCatDto): Promise<Cat> {
+  async createCat(@Body() cat: CreateCatDto): Promise<CatDocument> {
     return this.catsService.create(cat);
   }
 }
