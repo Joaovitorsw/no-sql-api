@@ -39,15 +39,7 @@ export class AuthService {
       password,
     });
 
-    createdUser.save();
-
-    return createdUser.toObject({
-      transform(_, ret) {
-        delete ret.password;
-        delete ret.__v;
-        return ret;
-      },
-    });
+    return createdUser;
   }
 
   async login(userDto: UserDto) {
@@ -65,6 +57,7 @@ export class AuthService {
       });
       return;
     }
+
     const equalPasswords = await bcrypt.compare(
       userDto.password,
       user?.password,
