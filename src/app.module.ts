@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AuthController } from './controllers/auth/auth.controller';
 import { CatsController } from './controllers/cats/cats.controller';
-import { CatsRepository } from './repository/cats.repository';
+import { CatsRepository } from './repository/cats/cats.repository';
 import { UsersRepository } from './repository/users/users.repository';
 import { Cat, CatSchema } from './schemas/cats.schema';
 import { User, UserSchema } from './schemas/users.schema';
