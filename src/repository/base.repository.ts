@@ -18,6 +18,7 @@ export class BaseRepository<T> {
     entityCreated.save();
     return entityCreated;
   }
+
   async findAll(
     entity?: Partial<T>,
     ...entityToPopulate: string[]
@@ -28,29 +29,30 @@ export class BaseRepository<T> {
       .exec();
     return allEntity as HydratedDocument<T>[];
   }
+
   async findOne(
     filter?: FilterQuery<T>,
     update?: UpdateQuery<T>,
     options?: QueryOptions<T> | null,
     ...entityToPopulate: string[]
   ): Promise<HydratedDocument<T>> {
-    const allEntity = await this.model
+    const findEntity = await this.model
       .findOne(filter, update, options)
       .populate(entityToPopulate[0], entityToPopulate[1])
       .exec();
 
-    return allEntity as HydratedDocument<T>;
+    return findEntity as HydratedDocument<T>;
   }
 
   async findById(
     id: string | number | Types.ObjectId,
     ...entityToPopulate: string[]
   ): Promise<HydratedDocument<T>> {
-    const allEntity = await this.model
+    const findEntity = await this.model
       .findById(id)
       .populate(entityToPopulate[0], entityToPopulate[1])
       .exec();
-    return allEntity as HydratedDocument<T>;
+    return findEntity as HydratedDocument<T>;
   }
 
   async findOneAndUpdate(
@@ -59,21 +61,22 @@ export class BaseRepository<T> {
     options?: QueryOptions<T> | null,
     ...entityToPopulate: string[]
   ): Promise<HydratedDocument<T>> {
-    const allEntity = await this.model
+    const findEntity = await this.model
       .findOneAndUpdate(filter, update, options)
       .populate(entityToPopulate[0], entityToPopulate[1])
       .exec();
-    return allEntity as HydratedDocument<T>;
+    return findEntity as HydratedDocument<T>;
   }
+
   async findOneAndDelete(
     filter?: FilterQuery<T>,
     options?: QueryOptions<T> | null,
     ...entityToPopulate: string[]
   ): Promise<HydratedDocument<T>> {
-    const allEntity = await this.model
+    const findEntity = await this.model
       .findOneAndDelete(filter, options)
       .populate(entityToPopulate[0], entityToPopulate[1])
       .exec();
-    return allEntity as HydratedDocument<T>;
+    return findEntity as HydratedDocument<T>;
   }
 }

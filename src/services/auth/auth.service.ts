@@ -73,4 +73,15 @@ export class AuthService {
     delete user.password;
     return user;
   }
+
+  async findAll(userDto?: Partial<UserDto>): Promise<UserDocument[]> {
+    const users = await this.usersRepository.findAll(
+      {
+        ...userDto,
+      },
+      '-password -__v',
+    );
+
+    return users;
+  }
 }

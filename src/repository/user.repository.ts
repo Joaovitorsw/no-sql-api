@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { FilterQuery, Model } from 'mongoose';
+import { FilterQuery, HydratedDocument, Model } from 'mongoose';
 import { UserDto } from 'src/models/user.dto';
 import { User, UserDocument } from 'src/schemas/users.schema';
 import { BaseRepository } from './base.repository';
@@ -10,7 +10,13 @@ export class UsersRepository extends BaseRepository<User> {
   constructor(@InjectModel(User.name) private userModel: Model<User>) {
     super(userModel);
   }
-
+  async findAll(
+    entity?: Partial<User>,
+    fields?: string,
+  ): Promise<HydratedDocument<User>[]> {
+    const users = await this.model.find(entity).select(fields).exec();
+    return users;
+  }
   async update(userDto: UserDto): Promise<UserDocument> {
     const user = super.findOneAndUpdate(
       {
