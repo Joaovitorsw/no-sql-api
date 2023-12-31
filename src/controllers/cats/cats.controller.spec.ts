@@ -2,6 +2,7 @@ import { getModelToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Types } from 'mongoose';
 import { CatDto } from '../../models/cat.dto';
+import { CatsRepository } from '../../repository/cat.repository';
 import { Cat, CatDocument } from '../../schemas/cats.schema';
 import { CatsService } from '../../services/cats/cats.service';
 import { ErrorDomainService } from '../../services/error-domain/error-domain.service';
@@ -17,6 +18,7 @@ describe('CatsController', () => {
       providers: [
         CatsService,
         ErrorDomainService,
+        CatsRepository,
         { provide: getModelToken(Cat.name), useValue: jest.fn() },
       ],
     }).compile();

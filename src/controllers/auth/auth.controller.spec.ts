@@ -1,5 +1,8 @@
 import { getModelToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
+import { Types } from 'mongoose';
+import { UserDto } from '../../models/user.dto';
+import { UsersRepository } from '../../repository/user.repository';
 import { User, UserDocument } from '../../schemas/users.schema';
 import { AuthService } from '../../services/auth/auth.service';
 import { ErrorDomainService } from '../../services/error-domain/error-domain.service';
@@ -14,6 +17,7 @@ describe('AuthController', () => {
       controllers: [AuthController],
       providers: [
         AuthService,
+        UsersRepository,
         ErrorDomainService,
         { provide: getModelToken(User.name), useValue: jest.fn() },
       ],
@@ -27,9 +31,11 @@ describe('AuthController', () => {
       username: 'Test',
       email: 'test@teste.com',
       password: '123456',
-    } as UserDocument;
-    jest.spyOn(authService, 'create').mockImplementation(async () => userDto);
-    const result = await authController.createUser(userDto);
+    };
+    jest
+      .spyOn(authService, 'create')
+      .mockImplementation(async () => userDto as UserDocument);
+    const result = await authController.createUser(userDto as UserDto);
     expect(result).toEqual(userDto);
   });
 
@@ -38,9 +44,25 @@ describe('AuthController', () => {
       username: 'Test',
       email: 'test@teste.com',
       password: '123456',
-    } as UserDocument;
-    jest.spyOn(authService, 'login').mockImplementation(async () => userDto);
+    };
+    jest
+      .spyOn(authService, 'login')
+      .mockImplementation(async () => userDto as UserDocument);
     const result = await authController.login(userDto);
     expect(result).toEqual(userDto);
+  });
+  it('should return an array of users', async () => {
+    const result: Partial<UserDocument>[] = [
+      {
+        _id: new Types.ObjectId('65919850e602a4b3ef1baf8f'),
+        username: 'joaovitorsw',
+        email: 'joaovitorwbr@gmail.com',
+      },
+    ];
+    jest
+      .spyOn(authService, 'findAll')
+      .mockImplementation(() => Promise.resolve(result));
+
+    expect(await authController.findAll()).toBe(result);
   });
 });

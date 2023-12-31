@@ -70,7 +70,8 @@
       "**/*controller.(t|j)s",
       "**/*interceptor.(t|j)s",
       "**/*service.(t|j)s",
-      "**/*pipe.(t|j)s"
+      "**/*pipe.(t|j)s",
+      "**/*repository.(t|j)s"
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"

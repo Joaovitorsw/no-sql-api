@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { FilterQuery, Model, Types } from 'mongoose';
-import { like } from 'src/helpers/like';
-import { CatDto } from 'src/models/cat.dto';
-import { Cat, CatDocument } from 'src/schemas/cats.schema';
+import { like } from '../helpers/like';
+import { CatDto } from '../models/cat.dto';
+import { Cat, CatDocument } from '../schemas/cats.schema';
 import { BaseRepository } from './base.repository';
 
 @Injectable()
@@ -13,7 +13,9 @@ export class CatsRepository extends BaseRepository<Cat> {
   }
 
   async create(catDto: CatDto): Promise<CatDocument> {
-    return (await super.create(catDto)).populate('owner', '-password -__v');
+    const cat = await super.create(catDto);
+    await cat.populate('owner', '-password -__v');
+    return cat.toObject();
   }
 
   async findAll(catDto?: Partial<CatDto>): Promise<CatDocument[]> {
@@ -62,18 +64,6 @@ export class CatsRepository extends BaseRepository<Cat> {
 
   async findById(id: string | number | Types.ObjectId): Promise<CatDocument> {
     const cat = await super.findById(id, 'owner', '-password -__v');
-    return cat;
-  }
-
-  async removeById(id: string | number | Types.ObjectId): Promise<CatDocument> {
-    const cat = await super.findOneAndDelete(
-      {
-        _id: id,
-      },
-      {},
-      'owner',
-      '-password -__v',
-    );
     return cat;
   }
 }

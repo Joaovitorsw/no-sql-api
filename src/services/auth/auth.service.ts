@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
-import { UsersRepository } from 'src/repository/user.repository';
 import { UserDto } from '../../models/user.dto';
+import { UsersRepository } from '../../repository/user.repository';
 import { UserDocument } from '../../schemas/users.schema';
 import {
   ErrorDomainService,
@@ -38,8 +38,9 @@ export class AuthService {
       username: userDto.username?.toLowerCase(),
       password,
     });
-
-    return createdUser;
+    const object = createdUser.toObject();
+    delete object.password;
+    return object as UserDocument;
   }
 
   async login(userDto: UserDto) {
@@ -74,7 +75,7 @@ export class AuthService {
     return user;
   }
 
-  async findAll(userDto?: Partial<UserDto>): Promise<UserDocument[]> {
+  async findAll(userDto?: Partial<UserDto>): Promise<Partial<UserDocument>[]> {
     const users = await this.usersRepository.findAll(
       {
         ...userDto,

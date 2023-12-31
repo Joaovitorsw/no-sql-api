@@ -1,7 +1,7 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { Types } from 'mongoose';
-import { CatsRepository } from 'src/repository/cat.repository';
 import { CatDto } from '../../models/cat.dto';
+import { CatsRepository } from '../../repository/cat.repository';
 import { CatDocument } from '../../schemas/cats.schema';
 import {
   ErrorDomainService,
