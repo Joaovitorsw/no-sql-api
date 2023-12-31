@@ -1,9 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
 import * as bcrypt from 'bcrypt';
-import { Model } from 'mongoose';
+import { UsersRepository } from 'src/repository/user.repository';
 import { UserDto } from '../../models/user.dto';
-import { User, UserDocument } from '../../schemas/users.schema';
+import { UserDocument } from '../../schemas/users.schema';
 import {
   ErrorDomainService,
   eTypeDomainError,
@@ -12,22 +11,19 @@ import {
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectModel(User.name) private userModel: Model<User>,
+    private usersRepository: UsersRepository,
     private errorDomainService: ErrorDomainService,
   ) {}
 
   async create(userDto: UserDto): Promise<UserDocument> {
     const password = await bcrypt.hash(userDto.password, 10);
 
-    const createUser = new this.userModel({
-      ...userDto,
+    const user = await this.usersRepository.findOne({
+      $or: [
+        { username: userDto.username?.toLowerCase() },
+        { email: userDto.email?.toLowerCase() },
+      ],
     });
-
-    const user = await this.userModel
-      .findOne({
-        $or: [{ username: createUser.username }, { email: createUser.email }],
-      })
-      .exec();
 
     if (user) {
       this.errorDomainService.addError({
@@ -37,8 +33,9 @@ export class AuthService {
       return;
     }
 
-    const createdUser = await this.userModel.create({
-      ...userDto,
+    const createdUser = await this.usersRepository.create({
+      email: userDto.email?.toLowerCase(),
+      username: userDto.username?.toLowerCase(),
       password,
     });
 
@@ -54,16 +51,26 @@ export class AuthService {
   }
 
   async login(userDto: UserDto) {
-    const user = await this.userModel.findOne({
-      $or: [{ email: userDto.email }, { username: userDto.username }],
+    const user = await this.usersRepository.findOne({
+      $or: [
+        { email: userDto.email?.toLowerCase() },
+        { username: userDto.username?.toLowerCase() },
+      ],
     });
+
+    if (!user) {
+      this.errorDomainService.addError({
+        type: eTypeDomainError.UNAUTHORIZED,
+        message: 'Credenciais inválidas!',
+      });
+      return;
+    }
     const equalPasswords = await bcrypt.compare(
       userDto.password,
       user?.password,
     );
 
-    const invalidCredentials = !user || !equalPasswords;
-    if (invalidCredentials) {
+    if (!equalPasswords) {
       this.errorDomainService.addError({
         type: eTypeDomainError.UNAUTHORIZED,
         message: 'Credenciais inválidas!',
@@ -71,13 +78,6 @@ export class AuthService {
       return;
     }
     delete user.password;
-
-    return user.toObject({
-      transform(_, ret) {
-        delete ret.password;
-        delete ret.__v;
-        return ret;
-      },
-    });
+    return user;
   }
 }

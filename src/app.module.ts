@@ -2,6 +2,8 @@ import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AuthController } from './controllers/auth/auth.controller';
 import { CatsController } from './controllers/cats/cats.controller';
+import { CatsRepository } from './repository/cat.repository';
+import { UsersRepository } from './repository/user.repository';
 import { Cat, CatSchema } from './schemas/cats.schema';
 import { User, UserSchema } from './schemas/users.schema';
 import { AuthService } from './services/auth/auth.service';
@@ -19,7 +21,19 @@ import { ErrorDomainService } from './services/error-domain/error-domain.service
     }),
   ],
   controllers: [CatsController, AuthController],
-  exports: [CatsService, AuthService, ErrorDomainService],
-  providers: [CatsService, AuthService, ErrorDomainService],
+  exports: [
+    CatsService,
+    AuthService,
+    ErrorDomainService,
+    CatsRepository,
+    UsersRepository,
+  ],
+  providers: [
+    CatsService,
+    AuthService,
+    ErrorDomainService,
+    CatsRepository,
+    UsersRepository,
+  ],
 })
 export class AppModule {}

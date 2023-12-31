@@ -109,6 +109,24 @@ describe('AuthService', () => {
       },
     ]);
   });
+  it('should return domain validation UNAUTHORIZED', async () => {
+    const userDto: UserDto = {
+      username: 'Test',
+      email: 'test@teste.com',
+      password: '123456',
+    };
+
+    jest.spyOn(UserModel, 'findOne').mockImplementationOnce(() => null);
+
+    await service.login(userDto);
+
+    expect(service['errorDomainService'].errors).toEqual([
+      {
+        type: eTypeDomainError.UNAUTHORIZED,
+        message: 'Credenciais inválidas!',
+      },
+    ]);
+  });
   it('should return domain login', async () => {
     const userDto: UserDto = {
       username: 'Test',
