@@ -23,14 +23,10 @@ export class CatsService {
       });
       return;
     }
-
-    const createdCat = this.catsRepository.create({
-      ...catDto,
-    });
-
     const cat = await this.catsRepository.findOne({
       $or: [
         { name: catDto.name, breed: catDto.breed },
+        { name: catDto.name, breed: catDto.breed, owner: catDto.owner },
         { name: catDto.name, breed: catDto.breed, age: catDto.age },
       ],
     });
@@ -42,7 +38,9 @@ export class CatsService {
       });
       return;
     }
-
+    const createdCat = this.catsRepository.create({
+      ...catDto,
+    });
     return createdCat;
   }
 
@@ -62,17 +60,7 @@ export class CatsService {
   async update(catDto: CatDto): Promise<CatDocument> {
     catDto.updateAt = new Date().toISOString();
     delete catDto.createAt;
-    const cat = await this.catsRepository.findOneAndUpdate(
-      {
-        _id: catDto._id,
-      },
-      {
-        ...catDto,
-      },
-      {
-        new: true,
-      },
-    );
+    const cat = await this.catsRepository.findOneAndUpdate(catDto);
 
     if (!cat) {
       this.errorDomainService.addError({
