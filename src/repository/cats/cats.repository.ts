@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { FilterQuery, Model, Types } from 'mongoose';
-import { like } from '../helpers/like';
-import { CatDto } from '../models/cat.dto';
-import { Cat, CatDocument } from '../schemas/cats.schema';
-import { BaseRepository } from './base.repository';
+import { like } from '../../helpers/like';
+import { CatDto } from '../../models/cat.dto';
+import { Cat, CatDocument } from '../../schemas/cats.schema';
+import { BaseRepository } from '../base/base.repository';
 
 @Injectable()
 export class CatsRepository extends BaseRepository<Cat> {

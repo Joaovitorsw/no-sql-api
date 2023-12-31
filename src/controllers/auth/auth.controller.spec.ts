@@ -2,7 +2,7 @@ import { getModelToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Types } from 'mongoose';
 import { UserDto } from '../../models/user.dto';
-import { UsersRepository } from '../../repository/user.repository';
+import { UsersRepository } from '../../repository/users/users.repository';
 import { User, UserDocument } from '../../schemas/users.schema';
 import { AuthService } from '../../services/auth/auth.service';
 import { ErrorDomainService } from '../../services/error-domain/error-domain.service';

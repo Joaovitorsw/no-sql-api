@@ -2,7 +2,7 @@ import { getModelToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Types } from 'mongoose';
 import { CatDto } from '../../models/cat.dto';
-import { CatsRepository } from '../../repository/cat.repository';
+import { CatsRepository } from '../../repository/cats/cats.repository';
 import { Cat } from '../../schemas/cats.schema';
 import {
   ErrorDomainService,

@@ -1,7 +1,7 @@
 import { getModelToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserDto } from '../../models/user.dto';
-import { UsersRepository } from '../../repository/user.repository';
+import { UsersRepository } from '../../repository/users/users.repository';
 import { User } from '../../schemas/users.schema';
 import {
   ErrorDomainService,

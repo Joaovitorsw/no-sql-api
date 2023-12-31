@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { UserDto } from '../../models/user.dto';
-import { UsersRepository } from '../../repository/user.repository';
+import { UsersRepository } from '../../repository/users/users.repository';
 import { UserDocument } from '../../schemas/users.schema';
 import {
   ErrorDomainService,
