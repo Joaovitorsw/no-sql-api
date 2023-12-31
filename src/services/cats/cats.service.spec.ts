@@ -2,7 +2,7 @@ import { getModelToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Types } from 'mongoose';
 import { CatDto } from '../../models/cat.dto';
-import { Cat } from '../../schemas/cat.schema';
+import { Cat } from '../../schemas/cats.schema';
 import {
   ErrorDomainService,
   eTypeDomainError,
@@ -14,9 +14,12 @@ class CatModel {
   save = jest.fn().mockResolvedValue(this.data);
   static create = jest.fn();
   static exec = jest.fn();
+  populate = jest.fn().mockResolvedValue(this.data);
   static find = jest.fn();
   static findOne = jest.fn();
   static findById = jest.fn();
+  static findOneAndUpdate = jest.fn();
+  static findOneAndDelete = jest.fn();
 }
 describe('CatsService', () => {
   let service: CatsService;
@@ -43,11 +46,13 @@ describe('CatsService', () => {
       breed: 'Breed',
       createAt: new Date().toISOString(),
       updateAt: new Date().toISOString(),
+      owner: '6590214c754d1e36278d8553',
     };
 
     jest.spyOn(CatModel, 'create').mockImplementationOnce(() => ({
       ...catDto,
       save: jest.fn().mockResolvedValue(catDto),
+      populate: jest.fn().mockImplementationOnce(() => catDto),
     }));
     jest.spyOn(CatModel, 'findOne').mockImplementation(() => ({
       exec: jest.fn().mockResolvedValue(null),
@@ -62,6 +67,7 @@ describe('CatsService', () => {
       breed: 'Breed',
       createAt: new Date().toISOString(),
       updateAt: new Date().toISOString(),
+      owner: '6590214c754d1e36278d8553',
     };
 
     await service.create(catDto);
@@ -80,15 +86,22 @@ describe('CatsService', () => {
       breed: 'Breed',
       createAt: new Date().toISOString(),
       updateAt: new Date().toISOString(),
+      owner: '6590214c754d1e36278d8553',
     };
 
     jest.spyOn(CatModel, 'findOne').mockImplementationOnce(() => ({
       exec: jest.fn().mockResolvedValue({
         _id: new Types.ObjectId('6590214c754d1e36278d8553'),
-        name: 'Test',
-        age: 15,
-        breed: 'Breed',
-        __v: 0,
+        name: 'Kiara',
+        age: 1.2,
+        breed: 'N/A',
+        createAt: '2023-12-31T16:52:41.943Z',
+        updateAt: '2023-12-31T16:52:41.943Z',
+        owner: {
+          _id: '6591a191ae3c5b621d1e6a38',
+          username: 'Giselida',
+          email: 'giselidac@gmail.com',
+        },
       }),
     }));
 
@@ -105,14 +118,26 @@ describe('CatsService', () => {
   it('should return by id of cats', async () => {
     const mockCat = {
       _id: new Types.ObjectId('6590214c754d1e36278d8553'),
-      name: 'Test',
-      age: 15,
-      breed: 'Breed',
-      __v: 0,
+      name: 'Kiara',
+      age: 1.2,
+      breed: 'N/A',
+      createAt: '2023-12-31T16:52:41.943Z',
+      updateAt: '2023-12-31T16:52:41.943Z',
+      owner: {
+        _id: '6591a191ae3c5b621d1e6a38',
+        username: 'Giselida',
+        email: 'giselidac@gmail.com',
+      },
     };
 
-    jest.spyOn(CatModel, 'findById').mockReturnThis();
-    jest.spyOn(CatModel, 'exec').mockResolvedValueOnce(mockCat);
+    jest.spyOn(CatModel, 'findById').mockReturnValueOnce({
+      populate: jest.fn().mockImplementationOnce(() => {
+        return {
+          ...mockCat,
+          exec: jest.fn().mockImplementationOnce(() => mockCat),
+        };
+      }),
+    });
 
     const result = await service.findById(mockCat._id);
     expect(result).toEqual(mockCat);
@@ -120,14 +145,26 @@ describe('CatsService', () => {
   it('should return empty by id of cats', async () => {
     const mockCat = {
       _id: new Types.ObjectId('6590214c754d1e36278d8553'),
-      name: 'Test',
-      age: 15,
-      breed: 'Breed',
-      __v: 0,
+      name: 'Kiara',
+      age: 1.2,
+      breed: 'N/A',
+      createAt: '2023-12-31T16:52:41.943Z',
+      updateAt: '2023-12-31T16:52:41.943Z',
+      owner: {
+        _id: '6591a191ae3c5b621d1e6a38',
+        username: 'Giselida',
+        email: 'giselidac@gmail.com',
+      },
     };
 
-    jest.spyOn(CatModel, 'findById').mockReturnThis();
-    jest.spyOn(CatModel, 'exec').mockResolvedValueOnce(null);
+    jest.spyOn(CatModel, 'findById').mockReturnValueOnce({
+      populate: jest.fn().mockImplementationOnce(() => {
+        return {
+          ...mockCat,
+          exec: jest.fn().mockImplementationOnce(() => null),
+        };
+      }),
+    });
 
     await service.findById(mockCat._id);
 
@@ -139,10 +176,30 @@ describe('CatsService', () => {
     ]);
   });
   it('should return an array of cats', async () => {
-    const mockCats = [{ name: 'Test', age: 1, breed: 'Breed' }];
+    const mockCats = [
+      {
+        _id: '6591a197ae3c5b621d1e6a3b',
+        name: 'Kiara',
+        age: 1.2,
+        breed: 'N/A',
+        createAt: '2023-12-31T16:52:41.943Z',
+        updateAt: '2023-12-31T16:52:41.943Z',
+        owner: {
+          _id: '6591a191ae3c5b621d1e6a38',
+          username: 'Giselida',
+          email: 'giselidac@gmail.com',
+        },
+      },
+    ];
 
-    jest.spyOn(CatModel, 'find').mockReturnThis();
-    jest.spyOn(CatModel, 'exec').mockResolvedValueOnce(mockCats);
+    jest.spyOn(CatModel, 'find').mockReturnValueOnce({
+      populate: jest.fn().mockImplementationOnce(() => {
+        return {
+          ...mockCats,
+          exec: jest.fn().mockImplementationOnce(() => mockCats),
+        };
+      }),
+    });
 
     const result = await service.findAll();
     expect(result).toEqual(mockCats);
@@ -150,8 +207,14 @@ describe('CatsService', () => {
   it('should return an empty array of cats', async () => {
     const mockCats = [];
 
-    jest.spyOn(CatModel, 'find').mockReturnThis();
-    jest.spyOn(CatModel, 'exec').mockResolvedValueOnce(mockCats);
+    jest.spyOn(CatModel, 'find').mockReturnValueOnce({
+      populate: jest.fn().mockImplementationOnce(() => {
+        return {
+          ...mockCats,
+          exec: jest.fn().mockImplementationOnce(() => mockCats),
+        };
+      }),
+    });
 
     await service.findAll();
     expect(service['errorDomainService'].errors).toEqual([
@@ -160,5 +223,109 @@ describe('CatsService', () => {
         message: 'Não existe nenhum gato(a) com essas informações',
       },
     ]);
+  });
+
+  it('should update a cat', async () => {
+    const catDto: CatDto = {
+      _id: '6590214c754d1e36278d8553',
+      name: 'Test',
+      age: 1,
+      breed: 'Breed',
+      createAt: new Date().toISOString(),
+      updateAt: new Date().toISOString(),
+      owner: '6590214c754d1e36278d8553',
+    };
+
+    jest.spyOn(CatModel, 'findOneAndUpdate').mockReturnValueOnce({
+      populate: jest.fn().mockImplementationOnce(() => {
+        return {
+          ...catDto,
+          exec: jest.fn().mockImplementationOnce(() => catDto),
+        };
+      }),
+    });
+
+    const result = await service.update(catDto);
+    expect(result).toEqual(catDto);
+  });
+  it('should update errorDomainService a NOT_FOUND cat', async () => {
+    const catDto: CatDto = {
+      _id: '6590214c754d1e36278d8553',
+      name: 'Test',
+      age: 1,
+      breed: 'Breed',
+      createAt: new Date().toISOString(),
+      updateAt: new Date().toISOString(),
+      owner: '6590214c754d1e36278d8553',
+    };
+
+    jest.spyOn(CatModel, 'findOneAndUpdate').mockReturnValueOnce({
+      populate: jest.fn().mockImplementationOnce(() => {
+        return {
+          exec: jest.fn().mockImplementationOnce(() => null),
+        };
+      }),
+    });
+
+    const result = await service.update(catDto);
+    expect(result).toBeNull();
+  });
+
+  it('should remove a cat', async () => {
+    const mockCat = {
+      _id: new Types.ObjectId('6590214c754d1e36278d8553'),
+      name: 'Kiara',
+      age: 1.2,
+      breed: 'N/A',
+      createAt: '2023-12-31T16:52:41.943Z',
+      updateAt: '2023-12-31T16:52:41.943Z',
+      owner: {
+        _id: '6591a191ae3c5b621d1e6a38',
+        username: 'Giselida',
+        email: '',
+      },
+    };
+
+    jest.spyOn(CatModel, 'findOneAndDelete').mockReturnValueOnce({
+      populate: jest.fn().mockImplementationOnce(() => {
+        return {
+          ...mockCat,
+          exec: jest.fn().mockImplementationOnce(() => mockCat),
+        };
+      }),
+    });
+
+    const result = await service.removeById(mockCat._id);
+
+    expect(result).toEqual(mockCat);
+  });
+
+  it('should remove errorDomainService a NOT_FOUND cat', async () => {
+    const mockCat = {
+      _id: new Types.ObjectId('6590214c754d1e36278d8553'),
+      name: 'Kiara',
+      age: 1.2,
+      breed: 'N/A',
+      createAt: '2023-12-31T16:52:41.943Z',
+      updateAt: '2023-12-31T16:52:41.943Z',
+      owner: {
+        _id: '6591a191ae3c5b621d1e6a38',
+        username: 'Giselida',
+        email: '',
+      },
+    };
+
+    jest.spyOn(CatModel, 'findOneAndDelete').mockReturnValueOnce({
+      populate: jest.fn().mockImplementationOnce(() => {
+        return {
+          ...mockCat,
+          exec: jest.fn().mockImplementationOnce(() => null),
+        };
+      }),
+    });
+
+    const result = await service.removeById(mockCat._id);
+
+    expect(result).toBeNull();
   });
 });

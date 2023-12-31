@@ -8,6 +8,7 @@ describe.only('ResponseInterceptor', () => {
   let interceptor: ResponseInterceptor<unknown>;
   let executionContextMock: ExecutionContext;
   let callHandlerMock: { handle: jest.Mock };
+  let errorDomainService: ErrorDomainService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -15,7 +16,7 @@ describe.only('ResponseInterceptor', () => {
     }).compile();
 
     interceptor = module.get<ResponseInterceptor<unknown>>(ResponseInterceptor);
-
+    errorDomainService = module.get<ErrorDomainService>(ErrorDomainService);
     callHandlerMock = { handle: jest.fn() };
   });
 
@@ -106,6 +107,48 @@ describe.only('ResponseInterceptor', () => {
         error: (error) => {
           expect(error).toEqual({
             status: HttpStatus.INTERNAL_SERVER_ERROR,
+            message: [
+              {
+                message: 'name deve ser uma string',
+                property: 'name',
+              },
+            ],
+            success: false,
+          });
+        },
+      });
+  });
+  it('should handle errorDomainService exception errors', () => {
+    const firstRequest = new Observable((observer) => {
+      errorDomainService['_errors'] = [
+        {
+          type: 'ValidationError',
+          message: 'name deve ser uma string',
+        },
+      ];
+      errorDomainService['_statusCode'] = HttpStatus.BAD_REQUEST;
+      observer.next([]);
+    });
+
+    callHandlerMock.handle.mockReturnValue(firstRequest);
+    executionContextMock = {
+      switchToHttp: () => ({
+        getResponse: () => ({
+          statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+          status: jest.fn().mockImplementation(() => {
+            return { json: jest.fn().mockImplementation((value) => value) };
+          }),
+        }),
+      }),
+    } as ExecutionContext;
+
+    interceptor
+      .intercept(executionContextMock, callHandlerMock)
+
+      .subscribe({
+        error: (error) => {
+          expect(error).toEqual({
+            status: HttpStatus.BAD_REQUEST,
             message: [
               {
                 message: 'name deve ser uma string',

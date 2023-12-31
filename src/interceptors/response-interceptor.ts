@@ -64,7 +64,10 @@ export class ResponseInterceptor<T> implements NestInterceptor {
         ? exception.getStatus()
         : HttpStatus.INTERNAL_SERVER_ERROR;
 
-    status = this.errorDomain.statusCode ? this.errorDomain.statusCode : status;
+    status =
+      this.errorDomain.statusCode && this.errorDomain.errors.length > 0
+        ? this.errorDomain.statusCode
+        : status;
 
     return response.status(status).json({
       status,

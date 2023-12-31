@@ -1,8 +1,8 @@
 import { IsNotEmpty, ValidateIf } from 'class-validator';
-import { Cat } from '../schemas/cat.schema';
+import { Cat } from '../schemas/cats.schema';
 
 export class CatDto extends Cat {
-  @ValidateIf((ob: any) => ob.createAt || ob.updateAt || ob._id)
+  @ValidateIf((ob: any) => ob.createAt || ob.updateAt)
   @IsNotEmpty()
   _id?: string;
 

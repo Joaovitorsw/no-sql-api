@@ -2,7 +2,7 @@ import { getModelToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Types } from 'mongoose';
 import { CatDto } from '../../models/cat.dto';
-import { Cat, CatDocument } from '../../schemas/cat.schema';
+import { Cat, CatDocument } from '../../schemas/cats.schema';
 import { CatsService } from '../../services/cats/cats.service';
 import { ErrorDomainService } from '../../services/error-domain/error-domain.service';
 import { CatsController } from './cats.controller';
@@ -71,5 +71,37 @@ describe('CatsController', () => {
       .mockImplementation(async () => createdCat);
 
     expect(await appController.createCat(catDto)).toEqual(createdCat);
+  });
+  it('should create and return a cat', async () => {
+    const catDto = new CatDto('Test Cat', 3, 'Test Breed');
+    const createdCat = {
+      ...catDto,
+      _id: new Types.ObjectId('6590214c754d1e36278d8553'),
+      __v: 0,
+    } as CatDocument;
+
+    jest
+      .spyOn(catsService, 'update')
+      .mockImplementation(async () => createdCat);
+
+    expect(await appController.updateCat(catDto)).toEqual(createdCat);
+  });
+  it('should create and return a cat', async () => {
+    const catDto = new CatDto('Test Cat', 3, 'Test Breed');
+    const createdCat = {
+      ...catDto,
+      _id: new Types.ObjectId('6590214c754d1e36278d8553'),
+      __v: 0,
+    } as CatDocument;
+
+    jest
+      .spyOn(catsService, 'removeById')
+      .mockImplementation(async () => createdCat);
+
+    expect(
+      await appController.removeCat(
+        new Types.ObjectId('6590214c754d1e36278d8553'),
+      ),
+    ).toEqual(createdCat);
   });
 });

@@ -12,7 +12,7 @@ import {
 } from '@nestjs/common';
 import { Types } from 'mongoose';
 import { CatDto } from '../../models/cat.dto';
-import { CatDocument } from '../../schemas/cat.schema';
+import { CatDocument } from '../../schemas/cats.schema';
 import { CatsService } from '../../services/cats/cats.service';
 
 @Controller('cats')

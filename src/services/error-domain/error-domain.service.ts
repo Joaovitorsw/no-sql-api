@@ -4,6 +4,7 @@ export enum eTypeDomainError {
   NOT_FOUND = 'NotFoundError',
   ALREADY_EXISTS = 'AlreadyExistsError',
   VALIDATION_ERROR = 'ValidationError',
+  UNAUTHORIZED = 'UnauthorizedError',
 }
 
 export interface DomainError {

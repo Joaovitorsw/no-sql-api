@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { like } from '../../helpers/like';
 import { CatDto } from '../../models/cat.dto';
-import { Cat, CatDocument } from '../../schemas/cat.schema';
+import { Cat, CatDocument } from '../../schemas/cats.schema';
 import {
   ErrorDomainService,
   eTypeDomainError,
@@ -46,11 +46,15 @@ export class CatsService {
       return;
     }
 
-    return createdCat.save();
+    createdCat.save();
+    return createdCat.populate('owner', '-password -__v');
   }
 
   async findById(id: string | number | Types.ObjectId): Promise<CatDocument> {
-    const cat = await this.catModel.findById(id).exec();
+    const cat = await this.catModel
+      .findById(id)
+      .populate('owner', '-password -__v')
+      .exec();
 
     if (!cat) {
       this.errorDomainService.addError({
@@ -77,6 +81,7 @@ export class CatsService {
           new: true,
         },
       )
+      .populate('owner', '-password -__v')
       .exec();
 
     if (!cat) {
@@ -94,6 +99,7 @@ export class CatsService {
       .findOneAndDelete({
         _id: id,
       })
+      .populate('owner', '-password -__v')
       .exec();
 
     if (!cat) {
@@ -113,6 +119,7 @@ export class CatsService {
         ...like(catDto, 'name'),
         ...like(catDto, 'breed'),
       })
+      .populate('owner', '-password -__v')
       .exec();
 
     if (cats.length === 0) {
