@@ -3,7 +3,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Types } from 'mongoose';
 import { CatDto } from '../../models/cat.dto';
 import { CatsRepository } from '../../repository/cats/cats.repository';
+import { UsersRepository } from '../../repository/users/users.repository';
 import { Cat } from '../../schemas/cats.schema';
+import { User } from '../../schemas/users.schema';
+import { UserModel } from '../auth/auth.service.spec';
 import {
   ErrorDomainService,
   eTypeDomainError,
@@ -36,9 +39,14 @@ describe('CatsService', () => {
         CatsService,
         ErrorDomainService,
         CatsRepository,
+        UsersRepository,
         {
           provide: getModelToken(Cat.name),
           useValue: CatModel,
+        },
+        {
+          provide: getModelToken(User.name),
+          useValue: UserModel,
         },
       ],
     }).compile();
@@ -70,8 +78,64 @@ describe('CatsService', () => {
       toObject: jest.fn().mockImplementationOnce(() => catDto),
       populate: jest.fn(),
     }));
+    jest.spyOn(UserModel, 'findById').mockImplementationOnce(() => {
+      return {
+        populate: jest.fn().mockImplementationOnce(() => {
+          return {
+            exec: jest.fn().mockResolvedValue({
+              _id: '6591e8602ac9a0ad41531926',
+              username: 'guto',
+              email: 'guto@gmail.com',
+            }),
+          };
+        }),
+      };
+    });
+
     const result = await service.create(catDto);
     expect(result).toEqual(catDto);
+  });
+  it('should validation empty user when create a new cat', async () => {
+    const catDto: CatDto = {
+      name: 'Test',
+      age: 1,
+      breed: 'Breed',
+      createAt: new Date().toISOString(),
+      updateAt: new Date().toISOString(),
+      owner: '6590214c754d1e36278d8553',
+    };
+
+    jest.spyOn(CatModel, 'findOne').mockImplementationOnce(() => {
+      return {
+        populate: jest.fn().mockImplementationOnce(() => {
+          return {
+            exec: jest.fn().mockResolvedValue(null),
+          };
+        }),
+      };
+    });
+    jest.spyOn(CatModel, 'create').mockImplementationOnce(() => ({
+      save: jest.fn(),
+      toObject: jest.fn().mockImplementationOnce(() => catDto),
+      populate: jest.fn(),
+    }));
+    jest.spyOn(UserModel, 'findById').mockImplementationOnce(() => {
+      return {
+        populate: jest.fn().mockImplementationOnce(() => {
+          return {
+            exec: jest.fn().mockResolvedValue(null),
+          };
+        }),
+      };
+    });
+
+    await service.create(catDto);
+    expect(service['errorDomainService'].errors).toEqual([
+      {
+        type: eTypeDomainError.NOT_FOUND,
+        message: 'Não existe um usuário com esse id',
+      },
+    ]);
   });
   it('should return domain validation VALIDATION_ERROR', async () => {
     const catDto: CatDto = {
@@ -82,7 +146,19 @@ describe('CatsService', () => {
       updateAt: new Date().toISOString(),
       owner: '6590214c754d1e36278d8553',
     };
-
+    jest.spyOn(UserModel, 'findById').mockImplementationOnce(() => {
+      return {
+        populate: jest.fn().mockImplementationOnce(() => {
+          return {
+            exec: jest.fn().mockResolvedValue({
+              _id: '6591e8602ac9a0ad41531926',
+              username: 'guto',
+              email: 'guto@gmail.com',
+            }),
+          };
+        }),
+      };
+    });
     await service.create(catDto);
 
     expect(service['errorDomainService'].errors).toEqual([
@@ -101,7 +177,19 @@ describe('CatsService', () => {
       updateAt: new Date().toISOString(),
       owner: '6590214c754d1e36278d8553',
     };
-
+    jest.spyOn(UserModel, 'findById').mockImplementationOnce(() => {
+      return {
+        populate: jest.fn().mockImplementationOnce(() => {
+          return {
+            exec: jest.fn().mockResolvedValue({
+              _id: '6591e8602ac9a0ad41531926',
+              username: 'guto',
+              email: 'guto@gmail.com',
+            }),
+          };
+        }),
+      };
+    });
     jest.spyOn(CatModel, 'findOne').mockImplementationOnce(() => {
       return {
         populate: jest.fn().mockImplementationOnce(() => {
@@ -254,6 +342,19 @@ describe('CatsService', () => {
       updateAt: new Date().toISOString(),
       owner: '6590214c754d1e36278d8553',
     };
+    jest.spyOn(UserModel, 'findById').mockImplementationOnce(() => {
+      return {
+        populate: jest.fn().mockImplementationOnce(() => {
+          return {
+            exec: jest.fn().mockResolvedValue({
+              _id: '6591e8602ac9a0ad41531926',
+              username: 'guto',
+              email: 'guto@gmail.com',
+            }),
+          };
+        }),
+      };
+    });
 
     jest.spyOn(CatModel, 'findOneAndUpdate').mockReturnValueOnce({
       populate: jest.fn().mockImplementationOnce(() => {
@@ -277,7 +378,15 @@ describe('CatsService', () => {
       updateAt: new Date().toISOString(),
       owner: '6590214c754d1e36278d8553',
     };
-
+    jest.spyOn(UserModel, 'findById').mockImplementationOnce(() => {
+      return {
+        populate: jest.fn().mockImplementationOnce(() => {
+          return {
+            exec: jest.fn().mockResolvedValue(null),
+          };
+        }),
+      };
+    });
     jest.spyOn(CatModel, 'findOneAndUpdate').mockReturnValueOnce({
       populate: jest.fn().mockImplementationOnce(() => {
         return {

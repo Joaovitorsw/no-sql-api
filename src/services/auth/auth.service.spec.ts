@@ -9,7 +9,7 @@ import {
 } from '../error-domain/error-domain.service';
 import { AuthService } from './auth.service';
 
-class UserModel {
+export class UserModel {
   constructor(private data) {}
   save = jest.fn().mockResolvedValue(this.data);
   static create = jest.fn();

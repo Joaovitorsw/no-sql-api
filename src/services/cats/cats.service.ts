@@ -2,6 +2,7 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { Types } from 'mongoose';
 import { CatDto } from '../../models/cat.dto';
 import { CatsRepository } from '../../repository/cats/cats.repository';
+import { UsersRepository } from '../../repository/users/users.repository';
 import { CatDocument } from '../../schemas/cats.schema';
 import {
   ErrorDomainService,
@@ -11,11 +12,22 @@ import {
 @Injectable()
 export class CatsService {
   constructor(
+    private userRepository: UsersRepository,
     private catsRepository: CatsRepository,
     private errorDomainService: ErrorDomainService,
   ) {}
 
   async create(catDto: CatDto): Promise<CatDocument> {
+    const user = await this.userRepository.findById(catDto.owner);
+
+    if (!user) {
+      this.errorDomainService.addError({
+        type: eTypeDomainError.NOT_FOUND,
+        message: 'Não existe um usuário com esse id',
+      });
+      this.errorDomainService.statusCode = HttpStatus.NOT_FOUND;
+    }
+
     if (catDto.age <= 0) {
       this.errorDomainService.addError({
         type: eTypeDomainError.VALIDATION_ERROR,
@@ -59,6 +71,17 @@ export class CatsService {
   }
   async update(catDto: CatDto): Promise<CatDocument> {
     catDto.updateAt = new Date().toISOString();
+
+    const user = await this.userRepository.findById(catDto.owner);
+
+    if (!user) {
+      this.errorDomainService.addError({
+        type: eTypeDomainError.NOT_FOUND,
+        message: 'Não existe um usuário com esse id',
+      });
+      this.errorDomainService.statusCode = HttpStatus.NOT_FOUND;
+    }
+
     delete catDto.createAt;
     const cat = await this.catsRepository.findOneAndUpdate(catDto);
 

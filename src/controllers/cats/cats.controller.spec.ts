@@ -3,7 +3,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Types } from 'mongoose';
 import { CatDto } from '../../models/cat.dto';
 import { CatsRepository } from '../../repository/cats/cats.repository';
+import { UsersRepository } from '../../repository/users/users.repository';
 import { Cat, CatDocument } from '../../schemas/cats.schema';
+import { User } from '../../schemas/users.schema';
 import { CatsService } from '../../services/cats/cats.service';
 import { ErrorDomainService } from '../../services/error-domain/error-domain.service';
 import { CatsController } from './cats.controller';
@@ -19,7 +21,9 @@ describe('CatsController', () => {
         CatsService,
         ErrorDomainService,
         CatsRepository,
+        UsersRepository,
         { provide: getModelToken(Cat.name), useValue: jest.fn() },
+        { provide: getModelToken(User.name), useValue: jest.fn() },
       ],
     }).compile();
     catsService = app.get<CatsService>(CatsService);
