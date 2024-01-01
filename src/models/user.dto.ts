@@ -2,7 +2,7 @@ import { IsNotEmpty, IsNumber, IsString, ValidateIf } from 'class-validator';
 import { User } from '../schemas/users.schema';
 
 export class UserDto extends User {
-  _id?: number;
+  id: number;
   @ValidateIf((ob: any) => !ob.email)
   @IsNotEmpty()
   @IsString()

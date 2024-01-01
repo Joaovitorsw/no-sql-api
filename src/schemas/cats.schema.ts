@@ -7,6 +7,7 @@ import {
   IsString,
 } from 'class-validator';
 import { HydratedDocument } from 'mongoose';
+import { transformID } from '../helpers/id-transformer';
 
 export type CatDocument = HydratedDocument<Cat>;
 
@@ -15,16 +16,10 @@ export type CatDocument = HydratedDocument<Cat>;
   autoIndex: true,
   versionKey: false,
   toJSON: {
-    transform: function (doc, ret) {
-      ret.id = ret._id;
-      delete ret._id;
-    },
+    transform: transformID,
   },
   toObject: {
-    transform: function (doc, ret) {
-      ret.id = ret._id;
-      delete ret._id;
-    },
+    transform: transformID,
   },
 })
 export class Cat {

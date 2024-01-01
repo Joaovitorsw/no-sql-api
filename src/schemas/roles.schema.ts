@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 import { HydratedDocument } from 'mongoose';
+import { transformID } from '../helpers/id-transformer';
 
 export type RoleDocument = HydratedDocument<Roles>;
 
@@ -10,16 +11,10 @@ export type RoleDocument = HydratedDocument<Roles>;
   versionKey: false,
   selectPopulatedPaths: true,
   toJSON: {
-    transform: function (doc, ret) {
-      ret.id = ret._id;
-      delete ret._id;
-    },
+    transform: transformID,
   },
   toObject: {
-    transform: function (doc, ret) {
-      ret.id = ret._id;
-      delete ret._id;
-    },
+    transform: transformID,
   },
 })
 export class Roles {
