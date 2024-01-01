@@ -18,7 +18,7 @@ export class UserDto extends User {
   password: string;
   @IsNotEmpty()
   @IsNumber()
-  roleID: number;
+  role: number;
   constructor(
     username: string,
     email: string,
@@ -29,6 +29,6 @@ export class UserDto extends User {
     this.username = username;
     this.email = email;
     this.password = password;
-    this.roleID = roleID;
+    this.role = roleID;
   }
 }

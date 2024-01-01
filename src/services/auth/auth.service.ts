@@ -40,7 +40,7 @@ export class AuthService {
       password,
     });
     delete createdUser.password;
-    return createdUser as UserDocument;
+    return createdUser;
   }
 
   async login(userDto: Omit<UserDto, 'roleID'>) {

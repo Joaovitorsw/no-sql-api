@@ -41,7 +41,7 @@ export class User {
   @Prop({ type: Number, ref: 'Roles' })
   @IsNotEmpty()
   @IsNumber()
-  roleID: number;
+  role: number;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

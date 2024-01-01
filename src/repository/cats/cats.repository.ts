@@ -12,7 +12,7 @@ export class CatsRepository extends BaseRepository<Cat> {
     path: 'owner',
     select: '-password',
     populate: {
-      path: 'roleID',
+      path: 'role',
     },
   };
   constructor(@InjectModel(Cat.name) public catModel: Model<Cat>) {
@@ -43,7 +43,7 @@ export class CatsRepository extends BaseRepository<Cat> {
   async findOneAndUpdate(catDto: CatDto): Promise<CatDocument> {
     const cats = await super.findOneAndUpdate(
       {
-        _id: catDto._id,
+        _id: catDto['id'],
       },
       {
         ...catDto,

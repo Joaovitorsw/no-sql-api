@@ -8,7 +8,7 @@ import { BaseRepository } from '../base/base.repository';
 export class UsersRepository extends BaseRepository<User> {
   constructor(@InjectModel(User.name) public userModel: Model<User>) {
     super(userModel, {
-      path: 'roleID',
+      path: 'role',
       select: '-password',
     });
   }
