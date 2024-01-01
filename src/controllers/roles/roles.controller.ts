@@ -11,6 +11,10 @@ import {
   Query,
 } from '@nestjs/common';
 import { Types } from 'mongoose';
+import {
+  PaginationRequest,
+  PaginationResponse,
+} from '../../models/pagination-response';
 import { Roles } from '../../schemas/roles.schema';
 import { RolesService } from '../../services/roles/roles.service';
 
@@ -20,7 +24,9 @@ export class RolesController {
 
   @Get()
   @HttpCode(HttpStatus.OK)
-  finAllCats(@Query() roles?: Partial<Roles>): Promise<Roles[]> {
+  finAllCats(
+    @Query() roles?: PaginationRequest<Partial<Roles>>,
+  ): Promise<PaginationResponse<Roles>> {
     return this.rolesService.findAll(roles);
   }
 

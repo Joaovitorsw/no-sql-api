@@ -29,6 +29,7 @@ export class CatsService extends BaseService<Cat> {
         message: 'Não existe um usuário com esse id',
       });
       this.errorDomainService.statusCode = HttpStatus.NOT_FOUND;
+      return;
     }
 
     if (catDto.age <= 0) {
@@ -112,18 +113,5 @@ export class CatsService extends BaseService<Cat> {
     }
 
     return cat;
-  }
-  async findAll(catDto?: Partial<CatDto>): Promise<CatDocument[]> {
-    const cats = await this.catsRepository.findAll(catDto);
-
-    if (cats.length === 0) {
-      this.errorDomainService.addError({
-        type: eTypeDomainError.NOT_FOUND,
-        message: 'Não existe nenhum gato(a) com essas informações',
-      });
-      this.errorDomainService.statusCode = HttpStatus.NOT_FOUND;
-    }
-
-    return cats;
   }
 }

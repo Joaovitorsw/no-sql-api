@@ -12,7 +12,11 @@ import {
 } from '@nestjs/common';
 import { Types } from 'mongoose';
 import { CatDto } from '../../models/cat.dto';
-import { CatDocument } from '../../schemas/cats.schema';
+import {
+  PaginationRequest,
+  PaginationResponse,
+} from '../../models/pagination-response';
+import { Cat, CatDocument } from '../../schemas/cats.schema';
 import { CatsService } from '../../services/cats/cats.service';
 
 @Controller('cats')
@@ -21,7 +25,9 @@ export class CatsController {
 
   @Get()
   @HttpCode(HttpStatus.OK)
-  finAllCats(@Query() cat?: Partial<CatDto>): Promise<CatDocument[]> {
+  finAllCats(
+    @Query() cat?: PaginationRequest<Partial<CatDto>>,
+  ): Promise<PaginationResponse<Cat>> {
     return this.catsService.findAll(cat);
   }
 

@@ -30,7 +30,6 @@ import { RolesService } from './services/roles/roles.service';
           });
           return schema;
         },
-        collection: 'roles',
         inject: [getConnectionToken()],
       },
     ]),
@@ -46,7 +45,6 @@ import { RolesService } from './services/roles/roles.service';
           });
           return schema;
         },
-        collection: 'users',
         inject: [getConnectionToken()],
       },
     ]),
@@ -56,16 +54,18 @@ import { RolesService } from './services/roles/roles.service';
         useFactory: (connection: Connection) => {
           const schema = CatSchema;
           const AutoIncrement = AutoIncrementFactory(connection);
-          schema.plugin(AutoIncrement, { id: 'cat_counter', inc_field: '_id' });
+          schema.plugin(AutoIncrement, {
+            id: 'cat_counter',
+            inc_field: '_id',
+          });
           return schema;
         },
-        collection: 'cats',
         inject: [getConnectionToken()],
       },
     ]),
     MongooseModule.forRootAsync({
       useFactory: () => ({
-        uri: 'mongodb://localhost:27017/local',
+        uri: 'mongodb://localhost:27017/admin',
       }),
     }),
   ],

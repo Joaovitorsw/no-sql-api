@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { RolesRepository } from 'src/repository/roles/roles.repository';
+import { RolesRepository } from '../../repository/roles/roles.repository';
 import { Roles } from '../../schemas/roles.schema';
 import { BaseService } from '../base/base.service';
 import { ErrorDomainService } from '../error-domain/error-domain.service';

@@ -5,8 +5,14 @@ import {
   HttpCode,
   HttpStatus,
   Post,
+  Query,
 } from '@nestjs/common';
+import {
+  PaginationRequest,
+  PaginationResponse,
+} from '../../models/pagination-response';
 import { UserDto } from '../../models/user.dto';
+import { User } from '../../schemas/users.schema';
 import { AuthService } from '../../services/auth/auth.service';
 
 @Controller('auth')
@@ -28,8 +34,9 @@ export class AuthController {
 
   @Get()
   @HttpCode(HttpStatus.OK)
-  async findAll() {
-    const users = await this.authService.findAll();
-    return users;
+  finAllCats(
+    @Query() user?: PaginationRequest<Partial<UserDto>>,
+  ): Promise<PaginationResponse<User>> {
+    return this.authService.findAll(user);
   }
 }

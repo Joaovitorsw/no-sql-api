@@ -1,6 +1,10 @@
 import { HttpStatus } from '@nestjs/common';
-import { PopulateOptions, Types } from 'mongoose';
-import { BaseRepository } from 'src/repository/base/base.repository';
+import { HydratedDocument, PopulateOptions, Types } from 'mongoose';
+import {
+  PaginationRequest,
+  PaginationResponse,
+} from '../../models/pagination-response';
+import { BaseRepository } from '../../repository/base/base.repository';
 import {
   ErrorDomainService,
   eTypeDomainError,
@@ -23,9 +27,29 @@ export class BaseService<T> {
     const object = createdEntity;
     return object;
   }
-  async findAll(roles: Partial<T>): Promise<T[]> {
-    const result = await this.repository.findAll(roles);
-    return result;
+  async findAll(
+    entity?: PaginationRequest<Partial<T>>,
+  ): Promise<PaginationResponse<HydratedDocument<T>>> {
+    const page = +entity?.page,
+      size = +entity?.size;
+    const items = await this.repository.findAll(entity);
+
+    if (items.length === 0) {
+      this.errorDomainService.addError({
+        type: eTypeDomainError.NOT_FOUND,
+        message: 'Não existe nenhum registro com essas informações',
+      });
+      this.errorDomainService.statusCode = HttpStatus.NOT_FOUND;
+    }
+
+    const pagination = {
+      items,
+      page: page ? page : 1,
+      size: size ? size : 10,
+      total: await this.repository.countDocuments(entity),
+    };
+
+    return pagination;
   }
   async findById(id: string | number | Types.ObjectId): Promise<T> {
     const result = await this.repository.findById(id);
@@ -67,6 +91,10 @@ export class BaseService<T> {
       });
       this.errorDomainService.statusCode = HttpStatus.NOT_FOUND;
     }
+    return result;
+  }
+  async countDocuments(entity: Partial<T>): Promise<number> {
+    const result = await this.repository.countDocuments(entity);
     return result;
   }
 }
