@@ -2,12 +2,13 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 import { HydratedDocument } from 'mongoose';
 
-export type UserDocument = HydratedDocument<User>;
+export type RoleDocument = HydratedDocument<Roles>;
 
 @Schema({
-  collection: 'users',
+  collection: 'roles',
   autoIndex: true,
   versionKey: false,
+  selectPopulatedPaths: true,
   toJSON: {
     transform: function (doc, ret) {
       ret.id = ret._id;
@@ -21,32 +22,17 @@ export type UserDocument = HydratedDocument<User>;
     },
   },
 })
-export class User {
+export class Roles {
   id: number;
 
   @Prop({ type: Number, unique: true })
   @IsOptional()
   @IsNumber()
   _id?: number;
-  @IsNotEmpty()
-  @IsString()
   @Prop({ type: String, required: true, unique: true })
-  username: string;
-
   @IsNotEmpty()
   @IsString()
-  @Prop({ type: String, required: true, unique: true })
-  email: string;
-
-  @IsNotEmpty()
-  @IsString()
-  @Prop({ type: String, required: true })
-  password: string;
-
-  @Prop({ type: Number, ref: 'Roles' })
-  @IsNotEmpty()
-  @IsNumber()
-  roleID: number;
+  name: string;
 }
 
-export const UserSchema = SchemaFactory.createForClass(User);
+export const RolesSchema = SchemaFactory.createForClass(Roles);

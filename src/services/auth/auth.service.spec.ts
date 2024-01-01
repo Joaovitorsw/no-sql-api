@@ -142,6 +142,7 @@ describe('AuthService', () => {
       username: 'Test',
       email: 'test@teste.com',
       password: '123456',
+      roles: '1',
     };
 
     jest.spyOn(UserModel, 'findOne').mockImplementationOnce(() => {
@@ -169,6 +170,7 @@ describe('AuthService', () => {
       username: 'Test',
       email: 'test@teste.com',
       password: '123456',
+      roles: '1',
     };
 
     jest.spyOn(UserModel, 'findOne').mockImplementationOnce(() => {

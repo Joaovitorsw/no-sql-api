@@ -4,7 +4,7 @@ import { Cat } from '../schemas/cats.schema';
 export class CatDto extends Cat {
   @ValidateIf((ob: any) => ob.createAt || ob.updateAt)
   @IsNotEmpty()
-  _id?: string;
+  _id?: number;
 
   constructor(name: string, age: number, breed: string) {
     super();

@@ -6,7 +6,7 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
-import { HydratedDocument, Types } from 'mongoose';
+import { HydratedDocument } from 'mongoose';
 
 export type CatDocument = HydratedDocument<Cat>;
 
@@ -14,8 +14,25 @@ export type CatDocument = HydratedDocument<Cat>;
   collection: 'cats',
   autoIndex: true,
   versionKey: false,
+  toJSON: {
+    transform: function (doc, ret) {
+      ret.id = ret._id;
+      delete ret._id;
+    },
+  },
+  toObject: {
+    transform: function (doc, ret) {
+      ret.id = ret._id;
+      delete ret._id;
+    },
+  },
 })
 export class Cat {
+  id: number;
+  @Prop({ type: Number, unique: true })
+  @IsOptional()
+  @IsNumber()
+  _id?: number;
   @Prop({ type: String, required: true, unique: true })
   @IsNotEmpty()
   @IsString()
@@ -40,10 +57,10 @@ export class Cat {
   @IsOptional()
   @IsDateString()
   updateAt: string;
-  @Prop({ type: Types.ObjectId, ref: 'User' })
+  @Prop({ type: Number, ref: 'User' })
   @IsNotEmpty()
-  @IsString()
-  owner: string;
+  @IsNumber()
+  owner: number;
 }
 
 export const CatSchema = SchemaFactory.createForClass(Cat);

@@ -34,16 +34,16 @@ export class AuthService {
     }
 
     const createdUser = await this.usersRepository.create({
+      ...userDto,
       email: userDto.email?.toLowerCase(),
       username: userDto.username?.toLowerCase(),
       password,
     });
-    const object = createdUser.toObject();
-    delete object.password;
-    return object as UserDocument;
+    delete createdUser.password;
+    return createdUser as UserDocument;
   }
 
-  async login(userDto: UserDto) {
+  async login(userDto: Omit<UserDto, 'roleID'>) {
     const user = await this.usersRepository.findOne({
       $or: [
         { email: userDto.email?.toLowerCase() },
@@ -76,12 +76,9 @@ export class AuthService {
   }
 
   async findAll(userDto?: Partial<UserDto>): Promise<Partial<UserDocument>[]> {
-    const users = await this.usersRepository.findAll(
-      {
-        ...userDto,
-      },
-      '-password -__v',
-    );
+    const users = await this.usersRepository.findAll({
+      ...userDto,
+    });
 
     return users;
   }

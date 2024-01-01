@@ -3,19 +3,22 @@ import { Types } from 'mongoose';
 import { CatDto } from '../../models/cat.dto';
 import { CatsRepository } from '../../repository/cats/cats.repository';
 import { UsersRepository } from '../../repository/users/users.repository';
-import { CatDocument } from '../../schemas/cats.schema';
+import { Cat, CatDocument } from '../../schemas/cats.schema';
+import { BaseService } from '../base/base.service';
 import {
   ErrorDomainService,
   eTypeDomainError,
 } from '../error-domain/error-domain.service';
 
 @Injectable()
-export class CatsService {
+export class CatsService extends BaseService<Cat> {
   constructor(
     private userRepository: UsersRepository,
-    private catsRepository: CatsRepository,
-    private errorDomainService: ErrorDomainService,
-  ) {}
+    public catsRepository: CatsRepository,
+    public errorDomainService: ErrorDomainService,
+  ) {
+    super(catsRepository, errorDomainService);
+  }
 
   async create(catDto: CatDto): Promise<CatDocument> {
     const user = await this.userRepository.findById(catDto.owner);

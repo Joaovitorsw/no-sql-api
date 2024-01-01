@@ -1,7 +1,9 @@
 import {
+  Document,
   FilterQuery,
   HydratedDocument,
   Model,
+  PopulateOptions,
   QueryOptions,
   Types,
   UpdateQuery,
@@ -9,23 +11,31 @@ import {
 export type DocumentType<T> = T & Document;
 export class BaseRepository<T> {
   protected model: Model<T>;
-  protected constructor(model: Model<T>) {
-    this.model = model;
-  }
+  protected entityToPopulate: PopulateOptions;
 
-  async create(entity: Partial<T>): Promise<HydratedDocument<T>> {
-    const entityCreated = new this.model(entity);
-    entityCreated.save();
-    return entityCreated;
+  protected constructor(model: Model<T>, entityToPopulate?: PopulateOptions) {
+    this.model = model;
+    this.entityToPopulate = entityToPopulate;
+  }
+  async create(
+    entity: Partial<T>,
+    entityToPopulate?: PopulateOptions,
+  ): Promise<HydratedDocument<T>> {
+    const entityCreated = new this.model(entity) as Document<T>;
+    if (entityToPopulate || this?.entityToPopulate)
+      await entityCreated.populate(entityToPopulate ?? this?.entityToPopulate);
+    await entityCreated.save();
+    return entityCreated.toJSON() as HydratedDocument<T>;
   }
 
   async findAll(
     entity?: Partial<T>,
-    ...entityToPopulate: string[]
+    entityToPopulate?: PopulateOptions,
   ): Promise<HydratedDocument<T>[]> {
     const allEntity = await this.model
       .find(entity)
-      .populate(entityToPopulate[0], entityToPopulate[1])
+      .populate(entityToPopulate ?? this?.entityToPopulate)
+      .select((entityToPopulate ?? this?.entityToPopulate)?.select)
       .exec();
     return allEntity as HydratedDocument<T>[];
   }
@@ -34,11 +44,11 @@ export class BaseRepository<T> {
     filter?: FilterQuery<T>,
     update?: UpdateQuery<T>,
     options?: QueryOptions<T> | null,
-    ...entityToPopulate: string[]
+    entityToPopulate?: PopulateOptions,
   ): Promise<HydratedDocument<T>> {
     const findEntity = await this.model
       .findOne(filter, update, options)
-      .populate(entityToPopulate[0], entityToPopulate[1])
+      .populate(entityToPopulate ?? this?.entityToPopulate)
       .exec();
 
     return findEntity as HydratedDocument<T>;
@@ -46,11 +56,11 @@ export class BaseRepository<T> {
 
   async findById(
     id: string | number | Types.ObjectId,
-    ...entityToPopulate: string[]
+    entityToPopulate?: PopulateOptions,
   ): Promise<HydratedDocument<T>> {
     const findEntity = await this.model
       .findById(id)
-      .populate(entityToPopulate[0], entityToPopulate[1])
+      .populate(entityToPopulate ?? this?.entityToPopulate)
       .exec();
     return findEntity as HydratedDocument<T>;
   }
@@ -59,11 +69,11 @@ export class BaseRepository<T> {
     filter?: FilterQuery<T>,
     update?: UpdateQuery<T>,
     options?: QueryOptions<T> | null,
-    ...entityToPopulate: string[]
+    entityToPopulate?: PopulateOptions,
   ): Promise<HydratedDocument<T>> {
     const findEntity = await this.model
       .findOneAndUpdate(filter, update, options)
-      .populate(entityToPopulate[0], entityToPopulate[1])
+      .populate(entityToPopulate ?? this?.entityToPopulate)
       .exec();
     return findEntity as HydratedDocument<T>;
   }
@@ -71,11 +81,11 @@ export class BaseRepository<T> {
   async findOneAndDelete(
     filter?: FilterQuery<T>,
     options?: QueryOptions<T> | null,
-    ...entityToPopulate: string[]
+    entityToPopulate?: PopulateOptions,
   ): Promise<HydratedDocument<T>> {
     const findEntity = await this.model
       .findOneAndDelete(filter, options)
-      .populate(entityToPopulate[0], entityToPopulate[1])
+      .populate(entityToPopulate ?? this?.entityToPopulate)
       .exec();
     return findEntity as HydratedDocument<T>;
   }

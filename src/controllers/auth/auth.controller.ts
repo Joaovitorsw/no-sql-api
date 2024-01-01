@@ -21,7 +21,7 @@ export class AuthController {
 
   @Post('sign-in')
   @HttpCode(HttpStatus.OK)
-  async login(@Body() credentials: UserDto) {
+  async login(@Body() credentials: Omit<UserDto, 'roleID'>) {
     const user = await this.authService.login(credentials);
     return user;
   }

@@ -8,14 +8,20 @@ import { BaseRepository } from '../base/base.repository';
 
 @Injectable()
 export class CatsRepository extends BaseRepository<Cat> {
+  populationObject = {
+    path: 'owner',
+    select: '-password',
+    populate: {
+      path: 'roleID',
+    },
+  };
   constructor(@InjectModel(Cat.name) public catModel: Model<Cat>) {
     super(catModel);
   }
 
   async create(catDto: CatDto): Promise<CatDocument> {
-    const cat = await super.create(catDto);
-    await cat.populate('owner', '-password -__v');
-    return cat.toObject();
+    const cat = await super.create(catDto, this.populationObject);
+    return cat;
   }
 
   async findAll(catDto?: Partial<CatDto>): Promise<CatDocument[]> {
@@ -25,14 +31,13 @@ export class CatsRepository extends BaseRepository<Cat> {
         ...like(catDto, 'name'),
         ...like(catDto, 'breed'),
       },
-      'owner',
-      '-password -__v',
+      this.populationObject,
     );
 
     return cats;
   }
   async findOne(filter?: FilterQuery<Cat>): Promise<CatDocument> {
-    const cats = await super.findOne(filter, {}, {}, 'owner', '-password -__v');
+    const cats = await super.findOne(filter, {}, {}, this.populationObject);
     return cats;
   }
   async findOneAndUpdate(catDto: CatDto): Promise<CatDocument> {
@@ -46,8 +51,7 @@ export class CatsRepository extends BaseRepository<Cat> {
       {
         new: true,
       },
-      'owner',
-      '-password -__v',
+      this.populationObject,
     );
 
     return cats;
@@ -56,14 +60,13 @@ export class CatsRepository extends BaseRepository<Cat> {
     const cats = await super.findOneAndDelete(
       predicate,
       {},
-      'owner',
-      '-password -__v',
+      this.populationObject,
     );
     return cats;
   }
 
   async findById(id: string | number | Types.ObjectId): Promise<CatDocument> {
-    const cat = await super.findById(id, 'owner', '-password -__v');
+    const cat = await super.findById(id, this.populationObject);
     return cat;
   }
 }
