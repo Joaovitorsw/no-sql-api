@@ -1,11 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import {
-  IsDateString,
-  IsNotEmpty,
-  IsNumber,
-  IsOptional,
-  IsString,
-} from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 import { HydratedDocument } from 'mongoose';
 import { transformID } from '../helpers/id-transformer';
 
@@ -15,6 +9,7 @@ export type CatDocument = HydratedDocument<Cat>;
   collection: 'cats',
   autoIndex: true,
   versionKey: false,
+  timestamps: true,
   toJSON: {
     transform: transformID,
   },
@@ -43,15 +38,6 @@ export class Cat {
   @IsString()
   breed: string;
 
-  @Prop({ type: String, default: new Date().toISOString() })
-  @IsDateString()
-  @IsOptional()
-  createAt: string;
-
-  @Prop({ type: String, default: new Date().toISOString() })
-  @IsOptional()
-  @IsDateString()
-  updateAt: string;
   @Prop({ type: Number, ref: 'User' })
   @IsNotEmpty()
   @IsNumber()

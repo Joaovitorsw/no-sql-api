@@ -46,10 +46,10 @@ export class AuthService extends BaseService<User> {
     return createdUser;
   }
 
-  async login(userDto: Omit<UserDto, 'roleID'>) {
+  async login(userDto: Omit<UserDto, 'roleID' | 'email'>) {
     const user = await this.usersRepository.findOne({
       $or: [
-        { email: userDto.email?.toLowerCase() },
+        { email: userDto.username?.toLowerCase() },
         { username: userDto.username?.toLowerCase() },
       ],
     });

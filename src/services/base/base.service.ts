@@ -30,8 +30,6 @@ export class BaseService<T> {
   async findAll(
     entity?: PaginationRequest<Partial<T>>,
   ): Promise<PaginationResponse<HydratedDocument<T>>> {
-    const page = +entity?.page,
-      size = +entity?.size;
     const items = await this.repository.findAll(entity);
 
     if (items.length === 0) {
@@ -41,11 +39,13 @@ export class BaseService<T> {
       });
       this.errorDomainService.statusCode = HttpStatus.NOT_FOUND;
     }
+    const page = +(entity?.page ?? 0),
+      size = +(entity?.size ?? 10);
 
     const pagination = {
       items,
-      page: page ? page : 1,
-      size: size ? size : 10,
+      page: page,
+      size: size,
       total: await this.repository.countDocuments(entity),
     };
 

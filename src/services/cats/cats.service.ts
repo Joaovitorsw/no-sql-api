@@ -74,8 +74,6 @@ export class CatsService extends BaseService<Cat> {
     return cat;
   }
   async update(catDto: CatDto): Promise<CatDocument> {
-    catDto.updateAt = new Date().toISOString();
-
     const user = await this.userRepository.findById(catDto.owner);
 
     if (!user) {
@@ -86,7 +84,6 @@ export class CatsService extends BaseService<Cat> {
       this.errorDomainService.statusCode = HttpStatus.NOT_FOUND;
     }
 
-    delete catDto.createAt;
     const cat = await this.catsRepository.findOneAndUpdate(catDto);
 
     if (!cat) {

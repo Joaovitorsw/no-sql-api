@@ -9,6 +9,7 @@ import {
   Types,
   UpdateQuery,
 } from 'mongoose';
+import { like } from 'src/helpers/like';
 export type DocumentType<T> = T & Document;
 export class BaseRepository<T> {
   protected model: Model<T>;
@@ -36,16 +37,49 @@ export class BaseRepository<T> {
     const sort: { [key: string]: SortOrder } = this.getSortKey(entity);
     const pagination: { [key: string]: number } = this.getPagination(entity);
 
+    const queryCriteria = this.getQueryCriteria(entity);
+
     const query = this.model
-      .find(entity)
+      .find(queryCriteria)
       .populate(entityToPopulate ?? this?.entityToPopulate)
       .select((entityToPopulate ?? this?.entityToPopulate)?.select);
 
     if (sort) query.sort(sort);
 
-    if (pagination) query.skip(pagination?.skip).limit(pagination?.limit);
+    if (pagination)
+      query.skip(pagination?.skip * pagination?.limit).limit(pagination?.limit);
 
     return (await query.exec()) as HydratedDocument<T>[];
+  }
+  private getQueryCriteria(entity: Partial<T>) {
+    const queryCriteria = Object.keys(entity).reduce((acc, key) => {
+      if (key == 'page' || key == 'size' || key == 'sort') return acc;
+      const isString = typeof entity[key] === 'string';
+      if (isString) {
+        const isDateRange = this.getRangeDateCriteria(entity, key);
+        if (isDateRange) return isDateRange;
+        acc[key] = like(entity, key)[key];
+        return acc;
+      }
+      acc[key] = entity[key];
+      return acc;
+    }, entity);
+    return queryCriteria as FilterQuery<T>;
+  }
+  private getRangeDateCriteria(entity: Partial<T>, key: string) {
+    const [firstDate, finalDate] = entity[key].split(',');
+    const startDate = new Date(`${firstDate}T00:00:00.000Z`);
+    const endDate = new Date(`${finalDate}T23:59:59.999Z`);
+    if (
+      startDate.toString() != 'Invalid Date' &&
+      endDate.toString() != 'Invalid Date'
+    ) {
+      entity[key] = {
+        $gte: startDate,
+        $lte: endDate,
+      };
+      return entity;
+    }
   }
   private getPagination(entity: Partial<T>) {
     if (entity?.['page'] && entity?.['size']) {
