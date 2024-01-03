@@ -36,7 +36,6 @@ export class BaseRepository<T> {
   ): Promise<HydratedDocument<T>[]> {
     const sort: { [key: string]: SortOrder } = this.getSortKey(entity);
     const pagination: { [key: string]: number } = this.getPagination(entity);
-
     const queryCriteria = this.getQueryCriteria(entity);
 
     const query = this.model
@@ -52,19 +51,20 @@ export class BaseRepository<T> {
     return (await query.exec()) as HydratedDocument<T>[];
   }
   private getQueryCriteria(entity: Partial<T>) {
-    const queryCriteria = Object.keys(entity).reduce((acc, key) => {
-      if (key == 'page' || key == 'size' || key == 'sort') return acc;
-      const isString = typeof entity[key] === 'string';
-      if (isString) {
-        const isDateRange = this.getRangeDateCriteria(entity, key);
-        if (isDateRange) return isDateRange;
-        acc[key] = like(entity, key)[key];
-        return acc;
-      }
-      acc[key] = entity[key];
-      return acc;
-    }, entity);
+    const queryCriteria = Object.keys(entity).reduce(
+      this.reduceQueryCallBack.bind(this),
+      entity,
+    );
     return queryCriteria as FilterQuery<T>;
+  }
+  private reduceQueryCallBack(acc: T, key: string) {
+    if (key == 'page' || key == 'size' || key == 'sort') return acc;
+    if (typeof acc[key] === 'string') {
+      const isDateRange = this.getRangeDateCriteria(acc, key);
+      if (isDateRange) return isDateRange;
+      acc[key] = like(acc, key)[key];
+    }
+    return acc;
   }
   private getRangeDateCriteria(entity: Partial<T>, key: string) {
     const [firstDate, finalDate] = entity[key].split(',');

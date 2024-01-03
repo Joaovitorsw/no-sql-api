@@ -28,6 +28,7 @@ export class CatsController {
   finAllCats(
     @Query() cat?: PaginationRequest<Partial<CatDto>>,
   ): Promise<PaginationResponse<Cat>> {
+    console.log(cat);
     return this.catsService.findAll(cat);
   }
 

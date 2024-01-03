@@ -2,14 +2,14 @@ import { ValidationError } from '@nestjs/common';
 import { APP_VALIDATION_PIPE } from './validator.pipe';
 const validationErrors: ValidationError[] = [
   {
-    target: { name: undefined, age: undefined, breed: undefined },
+    target: { name: undefined, age: undefined, photoUrl: undefined },
     value: undefined,
     property: 'name',
     children: [],
     constraints: { isString: 'name must be a string' },
   },
   {
-    target: { name: undefined, age: undefined, breed: undefined },
+    target: { name: undefined, age: undefined, photoUrl: undefined },
     value: undefined,
     property: 'age',
     children: [],
@@ -18,7 +18,7 @@ const validationErrors: ValidationError[] = [
     },
   },
   {
-    target: { name: undefined, age: undefined, breed: undefined },
+    target: { name: undefined, age: undefined, photoUrl: undefined },
     value: undefined,
     property: 'breed',
     children: [],

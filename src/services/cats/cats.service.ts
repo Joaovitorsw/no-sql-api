@@ -32,18 +32,11 @@ export class CatsService extends BaseService<Cat> {
       return;
     }
 
-    if (catDto.age <= 0) {
-      this.errorDomainService.addError({
-        type: eTypeDomainError.VALIDATION_ERROR,
-        message: 'Não foi possivel criar o gato(a) com a idade 0',
-      });
-      return;
-    }
     const cat = await this.catsRepository.findOne({
       $or: [
-        { name: catDto.name, breed: catDto.breed },
-        { name: catDto.name, breed: catDto.breed, owner: catDto.owner },
-        { name: catDto.name, breed: catDto.breed, age: catDto.age },
+        { name: catDto.name, photoUrl: catDto.photoUrl },
+        { name: catDto.name, photoUrl: catDto.photoUrl, owner: catDto.owner },
+        { name: catDto.name, photoUrl: catDto.photoUrl, age: catDto.birthDate },
       ],
     });
 
@@ -54,6 +47,8 @@ export class CatsService extends BaseService<Cat> {
       });
       return;
     }
+    console.log(catDto);
+
     const createdCat = this.catsRepository.create({
       ...catDto,
     });

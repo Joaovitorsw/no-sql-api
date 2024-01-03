@@ -1,15 +1,13 @@
-import { IsNotEmpty, ValidateIf } from 'class-validator';
 import { Cat } from '../schemas/cats.schema';
 
 export class CatDto extends Cat {
-  @ValidateIf((ob: any) => ob.createAt || ob.updateAt)
-  @IsNotEmpty()
   id: number;
 
-  constructor(name: string, age: number, breed: string) {
+  constructor(name: string, birthDate: Date, photoUrl: string, owner: number) {
     super();
     this.name = name;
-    this.age = age;
-    this.breed = breed;
+    this.birthDate = birthDate;
+    this.photoUrl = photoUrl;
+    this.owner = owner;
   }
 }

@@ -36,7 +36,7 @@ describe('CatsController', () => {
         _id: new Types.ObjectId('6590214c754d1e36278d8553'),
         name: 'Osvaldo',
         age: 15,
-        breed: 'N/A',
+        photoUrl: 'N/A',
         __v: 0,
       },
     ] as CatDocument[];
@@ -51,7 +51,7 @@ describe('CatsController', () => {
       _id: new Types.ObjectId('6590214c754d1e36278d8553'),
       name: 'Osvaldo',
       age: 15,
-      breed: 'N/A',
+      photoUrl: 'N/A',
       __v: 0,
     } as CatDocument;
 

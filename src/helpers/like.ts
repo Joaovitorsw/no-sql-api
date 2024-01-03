@@ -6,5 +6,5 @@ export function like<T>(value: Partial<T>, propertyName: string) {
           $options: 'i',
         },
       }
-    : {};
+    : value;
 }

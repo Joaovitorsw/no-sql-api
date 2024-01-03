@@ -58,7 +58,7 @@ describe('CatsService', () => {
     const catDto: CatDto = {
       name: 'Test',
       age: 1,
-      breed: 'Breed',
+      photoUrl: 'Breed',
       createAt: new Date().toISOString(),
       updateAt: new Date().toISOString(),
       owner: '6590214c754d1e36278d8553',
@@ -99,7 +99,7 @@ describe('CatsService', () => {
     const catDto: CatDto = {
       name: 'Test',
       age: 1,
-      breed: 'Breed',
+      photoUrl: 'Breed',
       createAt: new Date().toISOString(),
       updateAt: new Date().toISOString(),
       owner: '6590214c754d1e36278d8553',
@@ -141,7 +141,7 @@ describe('CatsService', () => {
     const catDto: CatDto = {
       name: 'Test',
       age: 0,
-      breed: 'Breed',
+      photoUrl: 'Breed',
       createAt: new Date().toISOString(),
       updateAt: new Date().toISOString(),
       owner: '6590214c754d1e36278d8553',
@@ -172,7 +172,7 @@ describe('CatsService', () => {
     const catDto: CatDto = {
       name: 'Test',
       age: 15,
-      breed: 'Breed',
+      photoUrl: 'Breed',
       createAt: new Date().toISOString(),
       updateAt: new Date().toISOString(),
       owner: '6590214c754d1e36278d8553',
@@ -198,7 +198,7 @@ describe('CatsService', () => {
               _id: new Types.ObjectId('6590214c754d1e36278d8553'),
               name: 'Kiara',
               age: 1.2,
-              breed: 'N/A',
+              photoUrl: 'N/A',
               createAt: '2023-12-31T16:52:41.943Z',
               updateAt: '2023-12-31T16:52:41.943Z',
               owner: {
@@ -227,7 +227,7 @@ describe('CatsService', () => {
       _id: new Types.ObjectId('6590214c754d1e36278d8553'),
       name: 'Kiara',
       age: 1.2,
-      breed: 'N/A',
+      photoUrl: 'N/A',
       createAt: '2023-12-31T16:52:41.943Z',
       updateAt: '2023-12-31T16:52:41.943Z',
       owner: {
@@ -254,7 +254,7 @@ describe('CatsService', () => {
       _id: new Types.ObjectId('6590214c754d1e36278d8553'),
       name: 'Kiara',
       age: 1.2,
-      breed: 'N/A',
+      photoUrl: 'N/A',
       createAt: '2023-12-31T16:52:41.943Z',
       updateAt: '2023-12-31T16:52:41.943Z',
       owner: {
@@ -288,7 +288,7 @@ describe('CatsService', () => {
         _id: '6591a197ae3c5b621d1e6a3b',
         name: 'Kiara',
         age: 1.2,
-        breed: 'N/A',
+        photoUrl: 'N/A',
         createAt: '2023-12-31T16:52:41.943Z',
         updateAt: '2023-12-31T16:52:41.943Z',
         owner: {
@@ -337,7 +337,7 @@ describe('CatsService', () => {
       _id: '6590214c754d1e36278d8553',
       name: 'Test',
       age: 1,
-      breed: 'Breed',
+      photoUrl: 'Breed',
       createAt: new Date().toISOString(),
       updateAt: new Date().toISOString(),
       owner: '6590214c754d1e36278d8553',
@@ -373,7 +373,7 @@ describe('CatsService', () => {
       _id: '6590214c754d1e36278d8553',
       name: 'Test',
       age: 1,
-      breed: 'Breed',
+      photoUrl: 'Breed',
       createAt: new Date().toISOString(),
       updateAt: new Date().toISOString(),
       owner: '6590214c754d1e36278d8553',
@@ -404,7 +404,7 @@ describe('CatsService', () => {
       _id: new Types.ObjectId('6590214c754d1e36278d8553'),
       name: 'Kiara',
       age: 1.2,
-      breed: 'N/A',
+      photoUrl: 'N/A',
       createAt: '2023-12-31T16:52:41.943Z',
       updateAt: '2023-12-31T16:52:41.943Z',
       owner: {
@@ -433,7 +433,7 @@ describe('CatsService', () => {
       _id: new Types.ObjectId('6590214c754d1e36278d8553'),
       name: 'Kiara',
       age: 1.2,
-      breed: 'N/A',
+      photoUrl: 'N/A',
       createAt: '2023-12-31T16:52:41.943Z',
       updateAt: '2023-12-31T16:52:41.943Z',
       owner: {

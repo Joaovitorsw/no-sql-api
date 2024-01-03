@@ -1,5 +1,11 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import {
+  IsDateString,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 import { HydratedDocument } from 'mongoose';
 import { transformID } from '../helpers/id-transformer';
 
@@ -28,15 +34,15 @@ export class Cat {
   @IsString()
   name: string;
 
-  @Prop({ type: Number, required: true })
+  @Prop({ type: Date, required: true })
   @IsNotEmpty()
-  @IsNumber()
-  age: number;
+  @IsDateString()
+  birthDate: Date;
 
   @Prop({ type: String, required: true })
   @IsNotEmpty()
   @IsString()
-  breed: string;
+  photoUrl: string;
 
   @Prop({ type: Number, ref: 'User' })
   @IsNotEmpty()
