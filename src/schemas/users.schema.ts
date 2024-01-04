@@ -17,7 +17,7 @@ export type UserDocument = HydratedDocument<User>;
   },
 })
 export class User {
-  id: number;
+  id?: number;
 
   @Prop({ type: Number, unique: true })
   @IsOptional()

@@ -2,7 +2,7 @@ import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 import { User } from '../schemas/users.schema';
 
 export class UserDto extends User {
-  id: number;
+  id?: number;
 
   @IsNotEmpty()
   @IsString()

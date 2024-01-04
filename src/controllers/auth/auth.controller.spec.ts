@@ -1,6 +1,5 @@
 import { getModelToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Types } from 'mongoose';
 import { UserDto } from '../../models/user.dto';
 import { UsersRepository } from '../../repository/users/users.repository';
 import { User, UserDocument } from '../../schemas/users.schema';
@@ -42,7 +41,6 @@ describe('AuthController', () => {
   it('should return a user', async () => {
     const userDto = {
       username: 'Test',
-      email: 'test@teste.com',
       password: '123456',
     };
     jest
@@ -52,17 +50,25 @@ describe('AuthController', () => {
     expect(result).toEqual(userDto);
   });
   it('should return an array of users', async () => {
-    const result: Partial<UserDocument>[] = [
+    const result = [
       {
-        _id: new Types.ObjectId('65919850e602a4b3ef1baf8f'),
+        _id: 1,
         username: 'joaovitorsw',
         email: 'joaovitorwbr@gmail.com',
+        password: '123456',
+        role: 1,
       },
     ];
+    const response = {
+      items: result as UserDocument[],
+      total: result.length,
+      page: 1,
+      size: 10,
+    };
     jest
       .spyOn(authService, 'findAll')
-      .mockImplementation(() => Promise.resolve(result));
+      .mockImplementation(() => Promise.resolve(response));
 
-    expect(await authController.findAll()).toBe(result);
+    expect(await authController.findAll()).toBe(response);
   });
 });

@@ -24,7 +24,7 @@ export class RolesController {
 
   @Get()
   @HttpCode(HttpStatus.OK)
-  finAllCats(
+  findAll(
     @Query() roles?: PaginationRequest<Partial<Roles>>,
   ): Promise<PaginationResponse<Roles>> {
     return this.rolesService.findAll(roles);
@@ -32,22 +32,22 @@ export class RolesController {
 
   @Get('/:id')
   @HttpCode(HttpStatus.OK)
-  findCat(@Param('id') id: string | number | Types.ObjectId): Promise<Roles> {
+  find(@Param('id') id: string | number | Types.ObjectId): Promise<Roles> {
     return this.rolesService.findById(id);
   }
   @Put()
   @HttpCode(HttpStatus.OK)
-  updateCat(@Body() role: Roles): Promise<Roles> {
+  update(@Body() role: Roles): Promise<Roles> {
     return this.rolesService.update(role);
   }
   @Delete('/:id')
   @HttpCode(HttpStatus.OK)
-  removeCat(@Param('id') id: string | number | Types.ObjectId): Promise<Roles> {
+  remove(@Param('id') id: string | number | Types.ObjectId): Promise<Roles> {
     return this.rolesService.removeById(id);
   }
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  createCat(@Body() role: Roles): Promise<Roles> {
+  create(@Body() role: Roles): Promise<Roles> {
     return this.rolesService.create(role);
   }
 }

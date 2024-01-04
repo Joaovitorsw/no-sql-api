@@ -1,7 +1,9 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule, getConnectionToken } from '@nestjs/mongoose';
+import { MulterModule } from '@nestjs/platform-express';
 import { Connection } from 'mongoose';
 import * as AutoIncrementFactory from 'mongoose-sequence';
+import { NestjsFormDataModule } from 'nestjs-form-data';
 import { AuthController } from './controllers/auth/auth.controller';
 import { CatsController } from './controllers/cats/cats.controller';
 import { RolesController } from './controllers/roles/roles.controller';
@@ -68,6 +70,12 @@ import { RolesService } from './services/roles/roles.service';
         uri: 'mongodb://localhost:27017/cat-app',
       }),
     }),
+    MulterModule.registerAsync({
+      useFactory: () => ({
+        dest: './uploads',
+      }),
+    }),
+    NestjsFormDataModule,
   ],
   controllers: [CatsController, AuthController, RolesController],
   exports: [

@@ -1,6 +1,5 @@
 import { getModelToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Types } from 'mongoose';
 import { CatDto } from '../../models/cat.dto';
 import { CatsRepository } from '../../repository/cats/cats.repository';
 import { UsersRepository } from '../../repository/users/users.repository';
@@ -33,81 +32,77 @@ describe('CatsController', () => {
   it('should return an array of cats', async () => {
     const result = [
       {
-        _id: new Types.ObjectId('6590214c754d1e36278d8553'),
+        _id: 1,
         name: 'Osvaldo',
-        age: 15,
+        birthDate: new Date(),
         photoUrl: 'N/A',
-        __v: 0,
+        owner: 1,
       },
     ] as CatDocument[];
+    const response = {
+      items: result,
+      total: result.length,
+      page: 1,
+      size: 10,
+    };
     jest
       .spyOn(catsService, 'findAll')
-      .mockImplementation(() => Promise.resolve(result));
+      .mockImplementation(() => Promise.resolve(response));
 
-    expect(await appController.finAllCats()).toBe(result);
+    expect(await appController.findAllCats()).toBe(response);
   });
   it('should return by id of cats', async () => {
     const result = {
-      _id: new Types.ObjectId('6590214c754d1e36278d8553'),
+      _id: 1,
       name: 'Osvaldo',
-      age: 15,
+      birthDate: new Date(),
       photoUrl: 'N/A',
-      __v: 0,
+      owner: 1,
     } as CatDocument;
 
     jest
       .spyOn(catsService, 'findById')
       .mockImplementation(() => Promise.resolve(result));
 
-    expect(await appController.findCat('6590214c754d1e36278d8553')).toBe(
-      result,
-    );
+    expect(await appController.findCat(1)).toBe(result);
   });
 
   it('should create and return a cat', async () => {
-    const catDto = new CatDto('Test Cat', 3, 'Test Breed');
+    const catDto = new CatDto('Test Cat', new Date(), 'teste.jpg', 1);
     const createdCat = {
       ...catDto,
-      _id: new Types.ObjectId('6590214c754d1e36278d8553'),
-      __v: 0,
+      _id: 1,
+    } as CatDocument;
+    jest
+      .spyOn(catsService, 'createCat')
+      .mockImplementation(async () => createdCat);
+
+    expect(await appController.createCat({}, catDto)).toEqual(createdCat);
+  });
+  it('should create and return a cat', async () => {
+    const catDto = new CatDto('Test Cat', new Date(), 'teste.jpg', 1);
+    const createdCat = {
+      ...catDto,
+      _id: 1,
     } as CatDocument;
 
     jest
-      .spyOn(catsService, 'create')
+      .spyOn(catsService, 'updateCat')
       .mockImplementation(async () => createdCat);
 
-    expect(await appController.createCat(catDto)).toEqual(createdCat);
+    expect(await appController.updateCat({}, catDto)).toEqual(createdCat);
   });
   it('should create and return a cat', async () => {
-    const catDto = new CatDto('Test Cat', 3, 'Test Breed');
+    const catDto = new CatDto('Test Cat', new Date(), 'teste.jpg', 1);
     const createdCat = {
       ...catDto,
-      _id: new Types.ObjectId('6590214c754d1e36278d8553'),
-      __v: 0,
-    } as CatDocument;
-
-    jest
-      .spyOn(catsService, 'update')
-      .mockImplementation(async () => createdCat);
-
-    expect(await appController.updateCat(catDto)).toEqual(createdCat);
-  });
-  it('should create and return a cat', async () => {
-    const catDto = new CatDto('Test Cat', 3, 'Test Breed');
-    const createdCat = {
-      ...catDto,
-      _id: new Types.ObjectId('6590214c754d1e36278d8553'),
-      __v: 0,
+      _id: 1,
     } as CatDocument;
 
     jest
       .spyOn(catsService, 'removeById')
       .mockImplementation(async () => createdCat);
 
-    expect(
-      await appController.removeCat(
-        new Types.ObjectId('6590214c754d1e36278d8553'),
-      ),
-    ).toEqual(createdCat);
+    expect(await appController.removeCat(1)).toEqual(createdCat);
   });
 });

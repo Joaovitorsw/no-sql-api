@@ -46,7 +46,7 @@ export class AuthService extends BaseService<User> {
     return createdUser;
   }
 
-  async login(userDto: Omit<UserDto, 'roleID' | 'email'>) {
+  async login(userDto: Omit<UserDto, 'role' | 'email'>) {
     const user = await this.usersRepository.findOne({
       $or: [
         { email: userDto.username?.toLowerCase() },

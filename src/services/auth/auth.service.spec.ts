@@ -16,9 +16,16 @@ export class UserModel {
   static exec = jest.fn();
   populate = jest.fn().mockResolvedValue(this.data);
   static find = jest.fn();
+  static findAll = jest.fn();
   static findOne = jest.fn();
   static findById = jest.fn();
+  static countDocuments = jest.fn();
   toObject = jest
+    .fn()
+    .mockImplementation(
+      (param: any) => param?.transform(0, this.data) ?? this.data,
+    );
+  toJSON = jest
     .fn()
     .mockImplementation(
       (param: any) => param?.transform(0, this.data) ?? this.data,
@@ -48,6 +55,7 @@ describe('AuthService', () => {
       username: 'Test',
       email: 'test@teste.com',
       password: '123456',
+      role: 1,
     };
     jest.spyOn(UserModel, 'findOne').mockImplementationOnce(() => {
       return {
@@ -72,6 +80,7 @@ describe('AuthService', () => {
     expect(result).toEqual({
       username: userDto.username.toLocaleLowerCase(),
       email: userDto.email.toLocaleLowerCase(),
+      role: 1,
     });
   });
 
@@ -80,6 +89,7 @@ describe('AuthService', () => {
       username: 'Test',
       email: 'test@teste.com',
       password: '123456',
+      role: 1,
     };
 
     jest.spyOn(UserModel, 'findOne').mockImplementationOnce(() => {
@@ -113,6 +123,7 @@ describe('AuthService', () => {
       username: 'Test',
       email: 'test@teste.com',
       password: '123456',
+      role: 1,
     };
 
     jest.spyOn(UserModel, 'findOne').mockImplementationOnce(() => {
@@ -120,8 +131,8 @@ describe('AuthService', () => {
         populate: jest.fn().mockImplementationOnce(() => {
           return {
             exec: jest.fn().mockResolvedValue({
-              toObject: (param: any) =>
-                param.transform(0, { ...userDto, password: '12346' }),
+              ...userDto,
+              toJSON: (param: any) => param.transform(0, { ...userDto }),
             }),
           };
         }),
@@ -142,16 +153,14 @@ describe('AuthService', () => {
       username: 'Test',
       email: 'test@teste.com',
       password: '123456',
-      roles: '1',
+      role: 1,
     };
 
     jest.spyOn(UserModel, 'findOne').mockImplementationOnce(() => {
       return {
         populate: jest.fn().mockImplementationOnce(() => {
           return {
-            exec: jest.fn().mockResolvedValue({
-              toObject: (param: any) => param.transform(0, null),
-            }),
+            exec: jest.fn().mockResolvedValue(null),
           };
         }),
       };
@@ -170,7 +179,7 @@ describe('AuthService', () => {
       username: 'Test',
       email: 'test@teste.com',
       password: '123456',
-      roles: '1',
+      role: 1,
     };
 
     jest.spyOn(UserModel, 'findOne').mockImplementationOnce(() => {
@@ -178,12 +187,15 @@ describe('AuthService', () => {
         populate: jest.fn().mockImplementationOnce(() => {
           return {
             exec: jest.fn().mockResolvedValue({
-              toObject: (param: any) =>
-                param.transform(0, {
-                  ...userDto,
-                  password:
-                    '$2b$10$H1WLmkjM1694RJz5GsRgJe.jvJCSlBZIzWqD9PYWGWgCiO4a06dhG',
-                }),
+              ...userDto,
+              password:
+                '$2b$10$H1WLmkjM1694RJz5GsRgJe.jvJCSlBZIzWqD9PYWGWgCiO4a06dhG',
+              toJSON: () => {
+                return {
+                  username: userDto.username,
+                  email: userDto.email,
+                };
+              },
             }),
           };
         }),
@@ -199,22 +211,40 @@ describe('AuthService', () => {
   it('should return an array of users', async () => {
     const mockUsers = [
       {
-        _id: '65919850e602a4b3ef1baf8f',
+        id: 1,
         username: 'joaovitorsw',
         email: 'joaovitorwbr@gmail.com',
+        role: 1,
       },
     ];
 
+    jest.spyOn(UserModel, 'countDocuments').mockReturnValueOnce({
+      exec: jest.fn().mockResolvedValueOnce(mockUsers.length),
+    });
     jest.spyOn(UserModel, 'find').mockReturnValueOnce({
-      select: jest.fn().mockImplementationOnce(() => {
+      populate: jest.fn().mockImplementationOnce(() => {
         return {
-          ...mockUsers,
-          exec: jest.fn().mockImplementationOnce(() => mockUsers),
+          select: jest.fn().mockImplementationOnce(() => {
+            return {
+              exec: jest.fn().mockImplementationOnce(() => mockUsers),
+              sort: jest.fn().mockImplementationOnce(() => mockUsers),
+              skip: jest.fn().mockImplementationOnce(() => {
+                return {
+                  limit: jest.fn().mockImplementationOnce(() => mockUsers),
+                };
+              }),
+            };
+          }),
         };
       }),
     });
 
     const result = await service.findAll();
-    expect(result).toEqual(mockUsers);
+    expect(result).toEqual({
+      items: mockUsers,
+      page: 0,
+      size: 10,
+      total: 1,
+    });
   });
 });

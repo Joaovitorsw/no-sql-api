@@ -26,7 +26,7 @@ export class CatsRepository extends BaseRepository<Cat> {
   async findOneAndUpdate(catDto: CatDto): Promise<CatDocument> {
     const cats = await super.findOneAndUpdate(
       {
-        _id: catDto['id'],
+        _id: +catDto['id'],
       },
       {
         ...catDto,
@@ -36,7 +36,6 @@ export class CatsRepository extends BaseRepository<Cat> {
       },
       POPULATION_OBJECT,
     );
-
     return cats;
   }
   async findOneAndDelete(predicate: FilterQuery<Cat>): Promise<CatDocument> {

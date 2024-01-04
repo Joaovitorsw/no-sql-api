@@ -30,8 +30,14 @@ export class BaseService<T> {
   async findAll(
     entity?: PaginationRequest<Partial<T>>,
   ): Promise<PaginationResponse<HydratedDocument<T>>> {
-    const items = await this.repository.findAll(entity);
+    if (!entity)
+      entity = {
+        page: 0,
+        size: 10,
+        sort: 'id,asc',
+      } as PaginationRequest<Partial<T>>;
 
+    const items = await this.repository.findAll(entity);
     if (items.length === 0) {
       this.errorDomainService.addError({
         type: eTypeDomainError.NOT_FOUND,

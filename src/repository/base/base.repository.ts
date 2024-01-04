@@ -9,7 +9,7 @@ import {
   Types,
   UpdateQuery,
 } from 'mongoose';
-import { like } from 'src/helpers/like';
+import { like } from '../../helpers/like';
 export type DocumentType<T> = T & Document;
 export class BaseRepository<T> {
   protected model: Model<T>;
@@ -59,6 +59,11 @@ export class BaseRepository<T> {
   }
   private reduceQueryCallBack(acc: T, key: string) {
     if (key == 'page' || key == 'size' || key == 'sort') return acc;
+    if (key == 'id') {
+      acc['_id'] = acc[key];
+      delete acc[key];
+      return acc;
+    }
     if (typeof acc[key] === 'string') {
       const isDateRange = this.getRangeDateCriteria(acc, key);
       if (isDateRange) return isDateRange;

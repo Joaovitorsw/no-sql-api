@@ -27,14 +27,14 @@ export class AuthController {
 
   @Post('sign-in')
   @HttpCode(HttpStatus.OK)
-  async login(@Body() credentials: Omit<UserDto, 'roleID'>) {
+  async login(@Body() credentials: Omit<UserDto, 'role' | 'email'>) {
     const user = await this.authService.login(credentials);
     return user;
   }
 
   @Get()
   @HttpCode(HttpStatus.OK)
-  finAllCats(
+  findAll(
     @Query() user?: PaginationRequest<Partial<UserDto>>,
   ): Promise<PaginationResponse<User>> {
     return this.authService.findAll(user);

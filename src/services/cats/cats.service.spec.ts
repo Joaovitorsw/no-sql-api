@@ -1,10 +1,9 @@
 import { getModelToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Types } from 'mongoose';
 import { CatDto } from '../../models/cat.dto';
 import { CatsRepository } from '../../repository/cats/cats.repository';
 import { UsersRepository } from '../../repository/users/users.repository';
-import { Cat } from '../../schemas/cats.schema';
+import { Cat, CatDocument } from '../../schemas/cats.schema';
 import { User } from '../../schemas/users.schema';
 import { UserModel } from '../auth/auth.service.spec';
 import {
@@ -23,8 +22,14 @@ class CatModel {
   static findOne = jest.fn();
   static findOneAndUpdate = jest.fn();
   static findOneAndDelete = jest.fn();
+  static countDocuments = jest.fn();
   static findById = jest.fn();
   toObject = jest
+    .fn()
+    .mockImplementation(
+      (param: any) => param?.transform(0, this.data) ?? this.data,
+    );
+  toJSON = jest
     .fn()
     .mockImplementation(
       (param: any) => param?.transform(0, this.data) ?? this.data,
@@ -57,11 +62,9 @@ describe('CatsService', () => {
   it('should create a new cat', async () => {
     const catDto: CatDto = {
       name: 'Test',
-      age: 1,
       photoUrl: 'Breed',
-      createAt: new Date().toISOString(),
-      updateAt: new Date().toISOString(),
-      owner: '6590214c754d1e36278d8553',
+      birthDate: new Date(),
+      owner: 1,
     };
 
     jest.spyOn(CatModel, 'findOne').mockImplementationOnce(() => {
@@ -83,7 +86,7 @@ describe('CatsService', () => {
         populate: jest.fn().mockImplementationOnce(() => {
           return {
             exec: jest.fn().mockResolvedValue({
-              _id: '6591e8602ac9a0ad41531926',
+              id: 1,
               username: 'guto',
               email: 'guto@gmail.com',
             }),
@@ -92,17 +95,17 @@ describe('CatsService', () => {
       };
     });
 
-    const result = await service.create(catDto);
+    const result = await service.createCat(catDto, {
+      path: 'uploads\\teste.jpg',
+    });
     expect(result).toEqual(catDto);
   });
   it('should validation empty user when create a new cat', async () => {
     const catDto: CatDto = {
       name: 'Test',
-      age: 1,
       photoUrl: 'Breed',
-      createAt: new Date().toISOString(),
-      updateAt: new Date().toISOString(),
-      owner: '6590214c754d1e36278d8553',
+      birthDate: new Date(),
+      owner: 32,
     };
 
     jest.spyOn(CatModel, 'findOne').mockImplementationOnce(() => {
@@ -116,7 +119,7 @@ describe('CatsService', () => {
     });
     jest.spyOn(CatModel, 'create').mockImplementationOnce(() => ({
       save: jest.fn(),
-      toObject: jest.fn().mockImplementationOnce(() => catDto),
+      toJSON: jest.fn().mockImplementationOnce(() => catDto),
       populate: jest.fn(),
     }));
     jest.spyOn(UserModel, 'findById').mockImplementationOnce(() => {
@@ -129,7 +132,7 @@ describe('CatsService', () => {
       };
     });
 
-    await service.create(catDto);
+    await service.createCat(catDto, {});
     expect(service['errorDomainService'].errors).toEqual([
       {
         type: eTypeDomainError.NOT_FOUND,
@@ -137,82 +140,37 @@ describe('CatsService', () => {
       },
     ]);
   });
-  it('should return domain validation VALIDATION_ERROR', async () => {
-    const catDto: CatDto = {
-      name: 'Test',
-      age: 0,
-      photoUrl: 'Breed',
-      createAt: new Date().toISOString(),
-      updateAt: new Date().toISOString(),
-      owner: '6590214c754d1e36278d8553',
-    };
-    jest.spyOn(UserModel, 'findById').mockImplementationOnce(() => {
-      return {
-        populate: jest.fn().mockImplementationOnce(() => {
-          return {
-            exec: jest.fn().mockResolvedValue({
-              _id: '6591e8602ac9a0ad41531926',
-              username: 'guto',
-              email: 'guto@gmail.com',
-            }),
-          };
-        }),
-      };
-    });
-    await service.create(catDto);
 
-    expect(service['errorDomainService'].errors).toEqual([
-      {
-        type: eTypeDomainError.VALIDATION_ERROR,
-        message: 'Não foi possivel criar o gato(a) com a idade 0',
-      },
-    ]);
-  });
   it('should return domain validation ALREADY_EXISTS', async () => {
     const catDto: CatDto = {
+      id: 1,
       name: 'Test',
-      age: 15,
-      photoUrl: 'Breed',
-      createAt: new Date().toISOString(),
-      updateAt: new Date().toISOString(),
-      owner: '6590214c754d1e36278d8553',
+      birthDate: new Date(),
+      photoUrl: 'N/A',
+      owner: 1,
     };
     jest.spyOn(UserModel, 'findById').mockImplementationOnce(() => {
       return {
         populate: jest.fn().mockImplementationOnce(() => {
           return {
             exec: jest.fn().mockResolvedValue({
-              _id: '6591e8602ac9a0ad41531926',
-              username: 'guto',
-              email: 'guto@gmail.com',
+              id: 1,
+              username: 'Giselida',
+              email: 'giselidac@gmail.com',
             }),
           };
         }),
       };
     });
-    jest.spyOn(CatModel, 'findOne').mockImplementationOnce(() => {
-      return {
-        populate: jest.fn().mockImplementationOnce(() => {
-          return {
-            exec: jest.fn().mockResolvedValue({
-              _id: new Types.ObjectId('6590214c754d1e36278d8553'),
-              name: 'Kiara',
-              age: 1.2,
-              photoUrl: 'N/A',
-              createAt: '2023-12-31T16:52:41.943Z',
-              updateAt: '2023-12-31T16:52:41.943Z',
-              owner: {
-                _id: '6591a191ae3c5b621d1e6a38',
-                username: 'Giselida',
-                email: 'giselidac@gmail.com',
-              },
-            }),
-          };
-        }),
-      };
-    });
+    jest.spyOn(service['catsRepository'], 'findOne').mockResolvedValueOnce({
+      id: 1,
+      name: 'Test',
+      birthDate: new Date(),
+      photoUrl: 'N/A',
+      owner: 1,
+    } as CatDocument);
 
-    await service.create(catDto);
+    await service.createCat(catDto, {});
 
     expect(service['errorDomainService'].errors).toEqual([
       {
@@ -224,14 +182,14 @@ describe('CatsService', () => {
 
   it('should return by id of cats', async () => {
     const mockCat = {
-      _id: new Types.ObjectId('6590214c754d1e36278d8553'),
+      id: 1,
       name: 'Kiara',
-      age: 1.2,
+      birthDate: '2023-12-31T16:52:41.943Z',
       photoUrl: 'N/A',
       createAt: '2023-12-31T16:52:41.943Z',
       updateAt: '2023-12-31T16:52:41.943Z',
       owner: {
-        _id: '6591a191ae3c5b621d1e6a38',
+        id: 1,
         username: 'Giselida',
         email: 'giselidac@gmail.com',
       },
@@ -246,19 +204,19 @@ describe('CatsService', () => {
       }),
     });
 
-    const result = await service.findById(mockCat._id);
+    const result = await service.findById(mockCat.id);
     expect(result).toEqual(mockCat);
   });
   it('should return empty by id of cats', async () => {
     const mockCat = {
-      _id: new Types.ObjectId('6590214c754d1e36278d8553'),
+      id: 1,
       name: 'Kiara',
       age: 1.2,
       photoUrl: 'N/A',
       createAt: '2023-12-31T16:52:41.943Z',
       updateAt: '2023-12-31T16:52:41.943Z',
       owner: {
-        _id: '6591a191ae3c5b621d1e6a38',
+        id: 1,
         username: 'Giselida',
         email: 'giselidac@gmail.com',
       },
@@ -273,7 +231,7 @@ describe('CatsService', () => {
       }),
     });
 
-    await service.findById(mockCat._id);
+    await service.findById(mockCat.id);
 
     expect(service['errorDomainService'].errors).toEqual([
       {
@@ -285,40 +243,68 @@ describe('CatsService', () => {
   it('should return an array of cats', async () => {
     const mockCats = [
       {
-        _id: '6591a197ae3c5b621d1e6a3b',
-        name: 'Kiara',
-        age: 1.2,
-        photoUrl: 'N/A',
+        id: 1,
+        birthDate: '2023-12-31T16:52:41.943Z',
         createAt: '2023-12-31T16:52:41.943Z',
-        updateAt: '2023-12-31T16:52:41.943Z',
+        name: 'Kiara',
         owner: {
-          _id: '6591a191ae3c5b621d1e6a38',
-          username: 'Giselida',
+          id: 1,
           email: 'giselidac@gmail.com',
+          username: 'Giselida',
         },
+        photoUrl: 'N/A',
+        updateAt: '2023-12-31T16:52:41.943Z',
       },
     ];
 
+    jest.spyOn(CatModel, 'countDocuments').mockReturnValueOnce({
+      exec: jest.fn().mockResolvedValueOnce(mockCats.length),
+    });
     jest.spyOn(CatModel, 'find').mockReturnValueOnce({
       populate: jest.fn().mockImplementationOnce(() => {
         return {
-          ...mockCats,
-          exec: jest.fn().mockImplementationOnce(() => mockCats),
+          select: jest.fn().mockImplementationOnce(() => {
+            return {
+              exec: jest.fn().mockImplementationOnce(() => mockCats),
+              sort: jest.fn().mockImplementationOnce(() => mockCats),
+              skip: jest.fn().mockImplementationOnce(() => {
+                return {
+                  limit: jest.fn().mockImplementationOnce(() => mockCats),
+                };
+              }),
+            };
+          }),
         };
       }),
     });
 
     const result = await service.findAll();
-    expect(result).toEqual(mockCats);
+    expect(result).toEqual({
+      items: mockCats,
+      page: 0,
+      size: 10,
+      total: 1,
+    });
   });
   it('should return an empty array of cats', async () => {
     const mockCats = [];
-
+    jest.spyOn(CatModel, 'countDocuments').mockReturnValueOnce({
+      exec: jest.fn().mockResolvedValueOnce(mockCats.length),
+    });
     jest.spyOn(CatModel, 'find').mockReturnValueOnce({
       populate: jest.fn().mockImplementationOnce(() => {
         return {
-          ...mockCats,
-          exec: jest.fn().mockImplementationOnce(() => mockCats),
+          select: jest.fn().mockImplementationOnce(() => {
+            return {
+              exec: jest.fn().mockImplementationOnce(() => mockCats),
+              sort: jest.fn().mockImplementationOnce(() => mockCats),
+              skip: jest.fn().mockImplementationOnce(() => {
+                return {
+                  limit: jest.fn().mockImplementationOnce(() => mockCats),
+                };
+              }),
+            };
+          }),
         };
       }),
     });
@@ -327,27 +313,25 @@ describe('CatsService', () => {
     expect(service['errorDomainService'].errors).toEqual([
       {
         type: eTypeDomainError.NOT_FOUND,
-        message: 'Não existe nenhum gato(a) com essas informações',
+        message: 'Não existe nenhum registro com essas informações',
       },
     ]);
   });
 
   it('should update a cat', async () => {
     const catDto: CatDto = {
-      _id: '6590214c754d1e36278d8553',
+      id: 1,
       name: 'Test',
-      age: 1,
       photoUrl: 'Breed',
-      createAt: new Date().toISOString(),
-      updateAt: new Date().toISOString(),
-      owner: '6590214c754d1e36278d8553',
+      birthDate: new Date(),
+      owner: 1,
     };
     jest.spyOn(UserModel, 'findById').mockImplementationOnce(() => {
       return {
         populate: jest.fn().mockImplementationOnce(() => {
           return {
             exec: jest.fn().mockResolvedValue({
-              _id: '6591e8602ac9a0ad41531926',
+              id: 1,
               username: 'guto',
               email: 'guto@gmail.com',
             }),
@@ -365,18 +349,18 @@ describe('CatsService', () => {
       }),
     });
 
-    const result = await service.update(catDto);
+    const result = await service.updateCat(catDto, {
+      path: 'uploads\\teste.jpg',
+    });
     expect(result).toEqual(catDto);
   });
   it('should update errorDomainService a NOT_FOUND cat', async () => {
     const catDto: CatDto = {
-      _id: '6590214c754d1e36278d8553',
+      id: 1,
       name: 'Test',
-      age: 1,
+      birthDate: new Date(),
       photoUrl: 'Breed',
-      createAt: new Date().toISOString(),
-      updateAt: new Date().toISOString(),
-      owner: '6590214c754d1e36278d8553',
+      owner: 1,
     };
     jest.spyOn(UserModel, 'findById').mockImplementationOnce(() => {
       return {
@@ -401,14 +385,14 @@ describe('CatsService', () => {
 
   it('should remove a cat', async () => {
     const mockCat = {
-      _id: new Types.ObjectId('6590214c754d1e36278d8553'),
+      id: 1,
       name: 'Kiara',
       age: 1.2,
       photoUrl: 'N/A',
       createAt: '2023-12-31T16:52:41.943Z',
       updateAt: '2023-12-31T16:52:41.943Z',
       owner: {
-        _id: '6591a191ae3c5b621d1e6a38',
+        id: 1,
         username: 'Giselida',
         email: '',
       },
@@ -423,21 +407,21 @@ describe('CatsService', () => {
       }),
     });
 
-    const result = await service.removeById(mockCat._id);
+    const result = await service.removeById(mockCat.id);
 
     expect(result).toEqual(mockCat);
   });
 
   it('should remove errorDomainService a NOT_FOUND cat', async () => {
     const mockCat = {
-      _id: new Types.ObjectId('6590214c754d1e36278d8553'),
+      id: 1,
       name: 'Kiara',
       age: 1.2,
       photoUrl: 'N/A',
       createAt: '2023-12-31T16:52:41.943Z',
       updateAt: '2023-12-31T16:52:41.943Z',
       owner: {
-        _id: '6591a191ae3c5b621d1e6a38',
+        id: 1,
         username: 'Giselida',
         email: '',
       },
@@ -452,7 +436,7 @@ describe('CatsService', () => {
       }),
     });
 
-    const result = await service.removeById(mockCat._id);
+    const result = await service.removeById(mockCat.id);
 
     expect(result).toBeNull();
   });

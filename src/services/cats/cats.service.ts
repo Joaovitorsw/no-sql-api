@@ -20,7 +20,7 @@ export class CatsService extends BaseService<Cat> {
     super(catsRepository, errorDomainService);
   }
 
-  async create(catDto: CatDto): Promise<CatDocument> {
+  async createCat(catDto: CatDto, file: any): Promise<CatDocument> {
     const user = await this.userRepository.findById(catDto.owner);
 
     if (!user) {
@@ -31,15 +31,16 @@ export class CatsService extends BaseService<Cat> {
       this.errorDomainService.statusCode = HttpStatus.NOT_FOUND;
       return;
     }
+    if (file?.path) {
+      const path = file.path.split('uploads\\')[1];
+      catDto.photoUrl = path;
+    }
 
     const cat = await this.catsRepository.findOne({
       $or: [
-        { name: catDto.name, photoUrl: catDto.photoUrl },
-        { name: catDto.name, photoUrl: catDto.photoUrl, owner: catDto.owner },
-        { name: catDto.name, photoUrl: catDto.photoUrl, age: catDto.birthDate },
+        { name: catDto.name, birthDate: catDto.birthDate, owner: catDto.owner },
       ],
     });
-
     if (cat) {
       this.errorDomainService.addError({
         type: eTypeDomainError.ALREADY_EXISTS,
@@ -47,9 +48,8 @@ export class CatsService extends BaseService<Cat> {
       });
       return;
     }
-    console.log(catDto);
 
-    const createdCat = this.catsRepository.create({
+    const createdCat = await this.catsRepository.create({
       ...catDto,
     });
     return createdCat;
@@ -68,7 +68,7 @@ export class CatsService extends BaseService<Cat> {
 
     return cat;
   }
-  async update(catDto: CatDto): Promise<CatDocument> {
+  async updateCat(catDto: CatDto, file: any): Promise<CatDocument> {
     const user = await this.userRepository.findById(catDto.owner);
 
     if (!user) {
@@ -78,7 +78,10 @@ export class CatsService extends BaseService<Cat> {
       });
       this.errorDomainService.statusCode = HttpStatus.NOT_FOUND;
     }
-
+    if (file?.path) {
+      const path = file.path.split('uploads\\')[1];
+      catDto.photoUrl = path;
+    }
     const cat = await this.catsRepository.findOneAndUpdate(catDto);
 
     if (!cat) {
