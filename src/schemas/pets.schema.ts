@@ -2,10 +2,10 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
 import { transformID } from '../helpers/id-transformer';
 
-export type CatDocument = HydratedDocument<Cat>;
+export type PetDocument = HydratedDocument<Pet>;
 
 @Schema({
-  collection: 'cats',
+  collection: 'pets',
   autoIndex: true,
   versionKey: false,
   timestamps: true,
@@ -16,7 +16,7 @@ export type CatDocument = HydratedDocument<Cat>;
     transform: transformID,
   },
 })
-export class Cat {
+export class Pet {
   id?: number;
   @Prop({ type: Number, unique: true })
   _id?: number;
@@ -26,11 +26,11 @@ export class Cat {
   @Prop({ type: Date, required: true })
   birthDate: Date;
 
-  @Prop({ type: String, required: true })
-  photoUrl: string;
+  @Prop({ type: String, required: true, ref: 'files' })
+  photoUrl: number;
 
   @Prop({ type: Number, ref: 'User' })
   owner: number;
 }
 
-export const CatSchema = SchemaFactory.createForClass(Cat);
+export const PetSchema = SchemaFactory.createForClass(Pet);

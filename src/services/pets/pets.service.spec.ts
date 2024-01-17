@@ -1,18 +1,18 @@
 import { getModelToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
-import { CatDto } from '../../models/cat.dto';
-import { CatsRepository } from '../../repository/cats/cats.repository';
+import { PetDto } from '../../dtos/pet.dto';
+import { PetsRepository } from '../../repository/pets/pets.repository';
 import { UsersRepository } from '../../repository/users/users.repository';
-import { Cat, CatDocument } from '../../schemas/cats.schema';
+import { Pet, PetDocument } from '../../schemas/pets.schema';
 import { User } from '../../schemas/users.schema';
 import { UserModel } from '../auth/auth.service.spec';
 import {
   ErrorDomainService,
   eTypeDomainError,
 } from '../error-domain/error-domain.service';
-import { CatsService } from './cats.service';
+import { PetsService } from './pets.service';
 
-class CatModel {
+class PetModel {
   constructor(private data) {}
   save = jest.fn().mockResolvedValue(this.data);
   static create = jest.fn();
@@ -35,19 +35,19 @@ class CatModel {
       (param: any) => param?.transform(0, this.data) ?? this.data,
     );
 }
-describe('CatsService', () => {
-  let service: CatsService;
+describe('PetsService', () => {
+  let service: PetsService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        CatsService,
+        PetsService,
         ErrorDomainService,
-        CatsRepository,
+        PetsRepository,
         UsersRepository,
         {
-          provide: getModelToken(Cat.name),
-          useValue: CatModel,
+          provide: getModelToken(Pet.name),
+          useValue: PetModel,
         },
         {
           provide: getModelToken(User.name),
@@ -56,18 +56,18 @@ describe('CatsService', () => {
       ],
     }).compile();
 
-    service = module.get<CatsService>(CatsService);
+    service = module.get<PetsService>(PetsService);
   });
 
-  it('should create a new cat', async () => {
-    const catDto: CatDto = {
+  it('should create a new pet', async () => {
+    const petDto: PetDto = {
       name: 'Test',
       photoUrl: 'Breed',
       birthDate: new Date(),
       owner: 1,
     };
 
-    jest.spyOn(CatModel, 'findOne').mockImplementationOnce(() => {
+    jest.spyOn(PetModel, 'findOne').mockImplementationOnce(() => {
       return {
         populate: jest.fn().mockImplementationOnce(() => {
           return {
@@ -76,9 +76,9 @@ describe('CatsService', () => {
         }),
       };
     });
-    jest.spyOn(CatModel, 'create').mockImplementationOnce(() => ({
+    jest.spyOn(PetModel, 'create').mockImplementationOnce(() => ({
       save: jest.fn(),
-      toObject: jest.fn().mockImplementationOnce(() => catDto),
+      toObject: jest.fn().mockImplementationOnce(() => petDto),
       populate: jest.fn(),
     }));
     jest.spyOn(UserModel, 'findById').mockImplementationOnce(() => {
@@ -95,20 +95,20 @@ describe('CatsService', () => {
       };
     });
 
-    const result = await service.createCat(catDto, {
+    const result = await service.createPet(petDto, {
       path: 'uploads\\teste.jpg',
     });
-    expect(result).toEqual(catDto);
+    expect(result).toEqual(petDto);
   });
-  it('should validation empty user when create a new cat', async () => {
-    const catDto: CatDto = {
+  it('should validation empty user when create a new pet', async () => {
+    const petDto: PetDto = {
       name: 'Test',
       photoUrl: 'Breed',
       birthDate: new Date(),
       owner: 32,
     };
 
-    jest.spyOn(CatModel, 'findOne').mockImplementationOnce(() => {
+    jest.spyOn(PetModel, 'findOne').mockImplementationOnce(() => {
       return {
         populate: jest.fn().mockImplementationOnce(() => {
           return {
@@ -117,9 +117,9 @@ describe('CatsService', () => {
         }),
       };
     });
-    jest.spyOn(CatModel, 'create').mockImplementationOnce(() => ({
+    jest.spyOn(PetModel, 'create').mockImplementationOnce(() => ({
       save: jest.fn(),
-      toJSON: jest.fn().mockImplementationOnce(() => catDto),
+      toJSON: jest.fn().mockImplementationOnce(() => petDto),
       populate: jest.fn(),
     }));
     jest.spyOn(UserModel, 'findById').mockImplementationOnce(() => {
@@ -132,7 +132,7 @@ describe('CatsService', () => {
       };
     });
 
-    await service.createCat(catDto, {});
+    await service.createPet(petDto, {});
     expect(service['errorDomainService'].errors).toEqual([
       {
         type: eTypeDomainError.NOT_FOUND,
@@ -142,7 +142,7 @@ describe('CatsService', () => {
   });
 
   it('should return domain validation ALREADY_EXISTS', async () => {
-    const catDto: CatDto = {
+    const petDto: PetDto = {
       id: 1,
       name: 'Test',
       birthDate: new Date(),
@@ -162,26 +162,26 @@ describe('CatsService', () => {
         }),
       };
     });
-    jest.spyOn(service['catsRepository'], 'findOne').mockResolvedValueOnce({
+    jest.spyOn(service['petsRepository'], 'findOne').mockResolvedValueOnce({
       id: 1,
       name: 'Test',
       birthDate: new Date(),
       photoUrl: 'N/A',
       owner: 1,
-    } as CatDocument);
+    } as PetDocument);
 
-    await service.createCat(catDto, {});
+    await service.createPet(petDto, {});
 
     expect(service['errorDomainService'].errors).toEqual([
       {
         type: eTypeDomainError.ALREADY_EXISTS,
-        message: 'Já existe um gato(a) com essas informações',
+        message: 'Já existe um pet com essas informações',
       },
     ]);
   });
 
-  it('should return by id of cats', async () => {
-    const mockCat = {
+  it('should return by id of pets', async () => {
+    const mockPet = {
       id: 1,
       name: 'Kiara',
       birthDate: '2023-12-31T16:52:41.943Z',
@@ -195,20 +195,20 @@ describe('CatsService', () => {
       },
     };
 
-    jest.spyOn(CatModel, 'findById').mockReturnValueOnce({
+    jest.spyOn(PetModel, 'findById').mockReturnValueOnce({
       populate: jest.fn().mockImplementationOnce(() => {
         return {
-          ...mockCat,
-          exec: jest.fn().mockImplementationOnce(() => mockCat),
+          ...mockPet,
+          exec: jest.fn().mockImplementationOnce(() => mockPet),
         };
       }),
     });
 
-    const result = await service.findById(mockCat.id);
-    expect(result).toEqual(mockCat);
+    const result = await service.findById(mockPet.id);
+    expect(result).toEqual(mockPet);
   });
-  it('should return empty by id of cats', async () => {
-    const mockCat = {
+  it('should return empty by id of pets', async () => {
+    const mockPet = {
       id: 1,
       name: 'Kiara',
       age: 1.2,
@@ -222,26 +222,26 @@ describe('CatsService', () => {
       },
     };
 
-    jest.spyOn(CatModel, 'findById').mockReturnValueOnce({
+    jest.spyOn(PetModel, 'findById').mockReturnValueOnce({
       populate: jest.fn().mockImplementationOnce(() => {
         return {
-          ...mockCat,
+          ...mockPet,
           exec: jest.fn().mockImplementationOnce(() => null),
         };
       }),
     });
 
-    await service.findById(mockCat.id);
+    await service.findById(mockPet.id);
 
     expect(service['errorDomainService'].errors).toEqual([
       {
         type: eTypeDomainError.NOT_FOUND,
-        message: 'Não existe um gato(a) com esse id',
+        message: 'Não existe um pet com esse id',
       },
     ]);
   });
-  it('should return an array of cats', async () => {
-    const mockCats = [
+  it('should return an array of pets', async () => {
+    const mockPets = [
       {
         id: 1,
         birthDate: '2023-12-31T16:52:41.943Z',
@@ -257,19 +257,19 @@ describe('CatsService', () => {
       },
     ];
 
-    jest.spyOn(CatModel, 'countDocuments').mockReturnValueOnce({
-      exec: jest.fn().mockResolvedValueOnce(mockCats.length),
+    jest.spyOn(PetModel, 'countDocuments').mockReturnValueOnce({
+      exec: jest.fn().mockResolvedValueOnce(mockPets.length),
     });
-    jest.spyOn(CatModel, 'find').mockReturnValueOnce({
+    jest.spyOn(PetModel, 'find').mockReturnValueOnce({
       populate: jest.fn().mockImplementationOnce(() => {
         return {
           select: jest.fn().mockImplementationOnce(() => {
             return {
-              exec: jest.fn().mockImplementationOnce(() => mockCats),
-              sort: jest.fn().mockImplementationOnce(() => mockCats),
+              exec: jest.fn().mockImplementationOnce(() => mockPets),
+              sort: jest.fn().mockImplementationOnce(() => mockPets),
               skip: jest.fn().mockImplementationOnce(() => {
                 return {
-                  limit: jest.fn().mockImplementationOnce(() => mockCats),
+                  limit: jest.fn().mockImplementationOnce(() => mockPets),
                 };
               }),
             };
@@ -280,27 +280,27 @@ describe('CatsService', () => {
 
     const result = await service.findAll();
     expect(result).toEqual({
-      items: mockCats,
+      items: mockPets,
       page: 0,
       size: 10,
       total: 1,
     });
   });
-  it('should return an empty array of cats', async () => {
-    const mockCats = [];
-    jest.spyOn(CatModel, 'countDocuments').mockReturnValueOnce({
-      exec: jest.fn().mockResolvedValueOnce(mockCats.length),
+  it('should return an empty array of pets', async () => {
+    const mockPets = [];
+    jest.spyOn(PetModel, 'countDocuments').mockReturnValueOnce({
+      exec: jest.fn().mockResolvedValueOnce(mockPets.length),
     });
-    jest.spyOn(CatModel, 'find').mockReturnValueOnce({
+    jest.spyOn(PetModel, 'find').mockReturnValueOnce({
       populate: jest.fn().mockImplementationOnce(() => {
         return {
           select: jest.fn().mockImplementationOnce(() => {
             return {
-              exec: jest.fn().mockImplementationOnce(() => mockCats),
-              sort: jest.fn().mockImplementationOnce(() => mockCats),
+              exec: jest.fn().mockImplementationOnce(() => mockPets),
+              sort: jest.fn().mockImplementationOnce(() => mockPets),
               skip: jest.fn().mockImplementationOnce(() => {
                 return {
-                  limit: jest.fn().mockImplementationOnce(() => mockCats),
+                  limit: jest.fn().mockImplementationOnce(() => mockPets),
                 };
               }),
             };
@@ -318,8 +318,8 @@ describe('CatsService', () => {
     ]);
   });
 
-  it('should update a cat', async () => {
-    const catDto: CatDto = {
+  it('should update a pet', async () => {
+    const petDto: PetDto = {
       id: 1,
       name: 'Test',
       photoUrl: 'Breed',
@@ -340,22 +340,22 @@ describe('CatsService', () => {
       };
     });
 
-    jest.spyOn(CatModel, 'findOneAndUpdate').mockReturnValueOnce({
+    jest.spyOn(PetModel, 'findOneAndUpdate').mockReturnValueOnce({
       populate: jest.fn().mockImplementationOnce(() => {
         return {
-          ...catDto,
-          exec: jest.fn().mockImplementationOnce(() => catDto),
+          ...petDto,
+          exec: jest.fn().mockImplementationOnce(() => petDto),
         };
       }),
     });
 
-    const result = await service.updateCat(catDto, {
+    const result = await service.updatePet(petDto, {
       path: 'uploads\\teste.jpg',
     });
-    expect(result).toEqual(catDto);
+    expect(result).toEqual(petDto);
   });
-  it('should update errorDomainService a NOT_FOUND cat', async () => {
-    const catDto: CatDto = {
+  it('should update errorDomainService a NOT_FOUND pet', async () => {
+    const petDto: PetDto = {
       id: 1,
       name: 'Test',
       birthDate: new Date(),
@@ -371,7 +371,7 @@ describe('CatsService', () => {
         }),
       };
     });
-    jest.spyOn(CatModel, 'findOneAndUpdate').mockReturnValueOnce({
+    jest.spyOn(PetModel, 'findOneAndUpdate').mockReturnValueOnce({
       populate: jest.fn().mockImplementationOnce(() => {
         return {
           exec: jest.fn().mockImplementationOnce(() => null),
@@ -379,12 +379,12 @@ describe('CatsService', () => {
       }),
     });
 
-    const result = await service.update(catDto);
+    const result = await service.update(petDto);
     expect(result).toBeNull();
   });
 
-  it('should remove a cat', async () => {
-    const mockCat = {
+  it('should remove a pet', async () => {
+    const mockPet = {
       id: 1,
       name: 'Kiara',
       age: 1.2,
@@ -398,22 +398,22 @@ describe('CatsService', () => {
       },
     };
 
-    jest.spyOn(CatModel, 'findOneAndDelete').mockReturnValueOnce({
+    jest.spyOn(PetModel, 'findOneAndDelete').mockReturnValueOnce({
       populate: jest.fn().mockImplementationOnce(() => {
         return {
-          ...mockCat,
-          exec: jest.fn().mockImplementationOnce(() => mockCat),
+          ...mockPet,
+          exec: jest.fn().mockImplementationOnce(() => mockPet),
         };
       }),
     });
 
-    const result = await service.removeById(mockCat.id);
+    const result = await service.removeById(mockPet.id);
 
-    expect(result).toEqual(mockCat);
+    expect(result).toEqual(mockPet);
   });
 
-  it('should remove errorDomainService a NOT_FOUND cat', async () => {
-    const mockCat = {
+  it('should remove errorDomainService a NOT_FOUND pet', async () => {
+    const mockPet = {
       id: 1,
       name: 'Kiara',
       age: 1.2,
@@ -427,16 +427,16 @@ describe('CatsService', () => {
       },
     };
 
-    jest.spyOn(CatModel, 'findOneAndDelete').mockReturnValueOnce({
+    jest.spyOn(PetModel, 'findOneAndDelete').mockReturnValueOnce({
       populate: jest.fn().mockImplementationOnce(() => {
         return {
-          ...mockCat,
+          ...mockPet,
           exec: jest.fn().mockImplementationOnce(() => null),
         };
       }),
     });
 
-    const result = await service.removeById(mockCat.id);
+    const result = await service.removeById(mockPet.id);
 
     expect(result).toBeNull();
   });

@@ -1,22 +1,29 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { APP_GUARD } from '@nestjs/core';
+import { JwtModule } from '@nestjs/jwt';
 import { MongooseModule, getConnectionToken } from '@nestjs/mongoose';
-import { MulterModule } from '@nestjs/platform-express';
 import { Connection } from 'mongoose';
 import * as AutoIncrementFactory from 'mongoose-sequence';
 import { NestjsFormDataModule } from 'nestjs-form-data';
 import { AuthController } from './controllers/auth/auth.controller';
-import { CatsController } from './controllers/cats/cats.controller';
+import { PetsController } from './controllers/pets/pets.controller';
 import { RolesController } from './controllers/roles/roles.controller';
-import { CatsRepository } from './repository/cats/cats.repository';
+import { JwtAuthGuard } from './guards/auth.guard';
+import { FilesRepository } from './repository/files/files.repository';
+import { PetsRepository } from './repository/pets/pets.repository';
 import { RolesRepository } from './repository/roles/roles.repository';
 import { UsersRepository } from './repository/users/users.repository';
-import { Cat, CatSchema } from './schemas/cats.schema';
+import { Files, FilesSchema } from './schemas/files.schema';
+import { Pet, PetSchema } from './schemas/pets.schema';
 import { Roles, RolesSchema } from './schemas/roles.schema';
 import { User, UserSchema } from './schemas/users.schema';
 import { AuthService } from './services/auth/auth.service';
-import { CatsService } from './services/cats/cats.service';
 import { ErrorDomainService } from './services/error-domain/error-domain.service';
+import { FilesService } from './services/files/files.service';
+import { PetsService } from './services/pets/pets.service';
 import { RolesService } from './services/roles/roles.service';
+import { JwtStrategy } from './strategies/jwt.strategy';
 
 @Module({
   imports: [
@@ -52,12 +59,27 @@ import { RolesService } from './services/roles/roles.service';
     ]),
     MongooseModule.forFeatureAsync([
       {
-        name: Cat.name,
+        name: Pet.name,
         useFactory: (connection: Connection) => {
-          const schema = CatSchema;
+          const schema = PetSchema;
           const AutoIncrement = AutoIncrementFactory(connection);
           schema.plugin(AutoIncrement, {
-            id: 'cat_counter',
+            id: 'pet_counter',
+            inc_field: '_id',
+          });
+          return schema;
+        },
+        inject: [getConnectionToken()],
+      },
+    ]),
+    MongooseModule.forFeatureAsync([
+      {
+        name: Files.name,
+        useFactory: (connection: Connection) => {
+          const schema = FilesSchema;
+          const AutoIncrement = AutoIncrementFactory(connection);
+          schema.plugin(AutoIncrement, {
+            id: 'files_counter',
             inc_field: '_id',
           });
           return schema;
@@ -67,34 +89,34 @@ import { RolesService } from './services/roles/roles.service';
     ]),
     MongooseModule.forRootAsync({
       useFactory: () => ({
-        uri: 'mongodb://localhost:27017/cat-app',
-      }),
-    }),
-    MulterModule.registerAsync({
-      useFactory: () => ({
-        dest: './uploads',
+        uri: process.env.DB_URI,
+        dbName: 'pet-app',
       }),
     }),
     NestjsFormDataModule,
+    ConfigModule.forRoot({ envFilePath: '.env', isGlobal: true }),
+    JwtModule.register({
+      secret: process.env.JWT_SECRET,
+      signOptions: { expiresIn: '10d' },
+    }),
   ],
-  controllers: [CatsController, AuthController, RolesController],
-  exports: [
-    RolesService,
-    RolesRepository,
-    CatsService,
-    AuthService,
-    ErrorDomainService,
-    CatsRepository,
-    UsersRepository,
-  ],
+  controllers: [PetsController, AuthController, RolesController],
+
   providers: [
     RolesService,
+    FilesService,
+    FilesRepository,
     RolesRepository,
-    CatsService,
+    PetsService,
     AuthService,
     ErrorDomainService,
-    CatsRepository,
+    PetsRepository,
     UsersRepository,
+    JwtStrategy,
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard,
+    },
   ],
 })
 export class AppModule {}

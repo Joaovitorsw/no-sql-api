@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import { UserDto } from '../../models/user.dto';
+import { UserDto } from '../../dtos/user.dto';
 import { UsersRepository } from '../../repository/users/users.repository';
-import { User, UserDocument } from '../../schemas/users.schema';
+import { User } from '../../schemas/users.schema';
 import { BaseService } from '../base/base.service';
 import {
   ErrorDomainService,
@@ -14,11 +15,12 @@ export class AuthService extends BaseService<User> {
   constructor(
     public usersRepository: UsersRepository,
     public errorDomainService: ErrorDomainService,
+    private readonly jwtService: JwtService,
   ) {
     super(usersRepository, errorDomainService);
   }
 
-  async create(userDto: UserDto): Promise<UserDocument> {
+  async create(userDto: UserDto) {
     const password = await bcrypt.hash(userDto.password, 10);
 
     const user = await this.usersRepository.findOne({
@@ -43,7 +45,7 @@ export class AuthService extends BaseService<User> {
       password,
     });
     delete createdUser.password;
-    return createdUser;
+    return { ...createdUser, token: this.jwtService.sign(createdUser) };
   }
 
   async login(userDto: Omit<UserDto, 'role' | 'email'>) {
@@ -76,6 +78,9 @@ export class AuthService extends BaseService<User> {
     }
     const userJSON = user.toJSON();
     delete userJSON.password;
-    return userJSON;
+    return {
+      ...userJSON,
+      token: this.jwtService.sign(userJSON),
+    };
   }
 }

@@ -3,7 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { RolesRepository } from '../../repository/roles/roles.repository';
 import { RoleDocument, Roles } from '../../schemas/roles.schema';
 import { ErrorDomainService } from '../../services/error-domain/error-domain.service';
-import { RolesService } from '../../services/roles/roles.service';
+import { RolesService } from '../../services/files/files.service';
 import { RolesController } from './roles.controller';
 
 describe('RolesController', () => {
@@ -24,7 +24,7 @@ describe('RolesController', () => {
     appController = app.get<RolesController>(RolesController);
   });
 
-  it('should return an array of cats', async () => {
+  it('should return an array of pets', async () => {
     const result = [
       {
         _id: 1,
@@ -43,7 +43,7 @@ describe('RolesController', () => {
 
     expect(await appController.findAll()).toBe(response);
   });
-  it('should return by id of cats', async () => {
+  it('should return by id of pets', async () => {
     const result = {
       _id: 1,
       name: 'Osvaldo',
@@ -56,7 +56,7 @@ describe('RolesController', () => {
     expect(await appController.find(1)).toBe(result);
   });
 
-  it('should create and return a cat', async () => {
+  it('should create and return a pet', async () => {
     const roleDto = new Roles();
     const createdRole = {
       ...roleDto,
@@ -68,7 +68,7 @@ describe('RolesController', () => {
 
     expect(await appController.create(roleDto)).toEqual(createdRole);
   });
-  it('should create and return a cat', async () => {
+  it('should create and return a pet', async () => {
     const roleDto = new Roles();
     const createdRole = {
       ...roleDto,
@@ -81,7 +81,7 @@ describe('RolesController', () => {
 
     expect(await appController.update(roleDto)).toEqual(createdRole);
   });
-  it('should create and return a cat', async () => {
+  it('should create and return a pet', async () => {
     const roleDto = new Roles();
     const createdRole = {
       ...roleDto,

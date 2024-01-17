@@ -38,19 +38,22 @@ export class BaseRepository<T> {
     const pagination: { [key: string]: number } = this.getPagination(entity);
     const queryCriteria = this.getQueryCriteria(entity);
 
-    const query = this.model
+    let query = this.model
       .find(queryCriteria)
       .populate(entityToPopulate ?? this?.entityToPopulate)
       .select((entityToPopulate ?? this?.entityToPopulate)?.select);
 
-    if (sort) query.sort(sort);
+    if (sort) query = query.sort(sort);
 
     if (pagination)
-      query.skip(pagination?.skip * pagination?.limit).limit(pagination?.limit);
+      query = query
+        .skip(pagination?.skip * pagination?.limit)
+        .limit(pagination?.limit);
 
     return (await query.exec()) as HydratedDocument<T>[];
   }
-  private getQueryCriteria(entity: Partial<T>) {
+
+  getQueryCriteria(entity: Partial<T>) {
     const queryCriteria = Object.keys(entity).reduce(
       this.reduceQueryCallBack.bind(this),
       entity,
@@ -60,10 +63,24 @@ export class BaseRepository<T> {
   private reduceQueryCallBack(acc: T, key: string) {
     if (key == 'page' || key == 'size' || key == 'sort') return acc;
     if (key == 'id') {
-      acc['_id'] = acc[key];
-      delete acc[key];
+      key = '_id';
+      acc[key] = acc['id'];
+      delete acc['id'];
+    }
+    if (acc[key].includes(',')) {
+      const isDateRange = this.getRangeDateCriteria(acc, key);
+      if (isDateRange) return isDateRange;
+      acc[key] = {
+        $in: acc[key].split(',').map((value) => {
+          if (value.includes('LIKE=')) {
+            return new RegExp(value.replace('LIKE=', ''), 'i');
+          }
+          return value.trim();
+        }),
+      };
       return acc;
     }
+
     if (typeof acc[key] === 'string') {
       const isDateRange = this.getRangeDateCriteria(acc, key);
       if (isDateRange) return isDateRange;
@@ -73,8 +90,9 @@ export class BaseRepository<T> {
   }
   private getRangeDateCriteria(entity: Partial<T>, key: string) {
     const [firstDate, finalDate] = entity[key].split(',');
-    const startDate = new Date(`${firstDate}T00:00:00.000Z`);
-    const endDate = new Date(`${finalDate}T23:59:59.999Z`);
+
+    const startDate = new Date(`${firstDate}T00:00:00-03:00`);
+    const endDate = new Date(`${finalDate ?? firstDate}T23:59:59-03:00`);
     if (
       startDate.toString() != 'Invalid Date' &&
       endDate.toString() != 'Invalid Date'

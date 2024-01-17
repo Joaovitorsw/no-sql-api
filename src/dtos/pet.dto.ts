@@ -1,7 +1,7 @@
 import { IsDateString, IsNotEmpty, IsString } from 'class-validator';
-import { Cat } from '../schemas/cats.schema';
+import { Pet } from '../schemas/pets.schema';
 
-export class CatDto extends Cat {
+export class PetDto extends Pet {
   id?: number;
 
   @IsNotEmpty()
@@ -12,11 +12,11 @@ export class CatDto extends Cat {
   @IsDateString()
   birthDate: Date;
 
-  photoUrl: string;
-
+  photoUrl: number;
   @IsNotEmpty()
   owner: number;
-  constructor(name: string, birthDate: Date, photoUrl: string, owner: number) {
+
+  constructor(name: string, birthDate: Date, photoUrl: number, owner: number) {
     super();
 
     this.name = name;

@@ -11,6 +11,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { Types } from 'mongoose';
+import { IsPublic } from '../../decorators/is-public-route';
 import {
   PaginationRequest,
   PaginationResponse,
@@ -24,6 +25,7 @@ export class RolesController {
 
   @Get()
   @HttpCode(HttpStatus.OK)
+  @IsPublic()
   findAll(
     @Query() roles?: PaginationRequest<Partial<Roles>>,
   ): Promise<PaginationResponse<Roles>> {
