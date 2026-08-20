@@ -14,7 +14,7 @@
   <img alt="Project Status" src="https://img.shields.io/badge/status-concluido-green?style=for-the-badge&label=Status">
 </p>
 
-<h1 align="center">No Sql API</h1>
+<h1 align="center">NoSQL API</h1>
 
 <p align="center">
  <a href="#eye_speech_bubble-visualizar">Visualizar</a> •
@@ -34,8 +34,9 @@
 
 <div align="center">
 
-Preview online não informado no repositório.
+Preview visual do projeto:
 
+<kbd><img src=".github/assets/project-cover.png" alt="Preview do projeto"/></kbd>
 
 </div>
   
@@ -45,7 +46,7 @@ Preview online não informado no repositório.
 
 <div align="center">
 
-API criada para praticar backend com Node.js/TypeScript, rotas HTTP, persistência de dados e organização de serviços.
+API NestJS com MongoDB/Mongoose para autenticação, JWT, validação, upload de arquivos e persistência NoSQL organizada em módulos.
 
 ---
 
@@ -57,13 +58,13 @@ API criada para praticar backend com Node.js/TypeScript, rotas HTTP, persistênc
 
 | :globe_with_meridians: Stack |
 | :--------------------------: |
-| [TypeScript](https://www.typescriptlang.org/) |
-| [JavaScript ES6](https://developer.mozilla.org/en-US/docs/Web/JavaScript) |
 | [NestJS](https://nestjs.com/) |
 | [Node.js](https://nodejs.org/) |
-| [Mongoose](https://mongoosejs.com/) |
+| [TypeScript](https://www.typescriptlang.org/) |
 | [MongoDB](https://www.mongodb.com/) |
-| [RxJS](https://rxjs.dev/) |
+| [Mongoose](https://mongoosejs.com/) |
+| JWT |
+| [Jest](https://jestjs.io/) |
 
 </div>
 
@@ -76,10 +77,12 @@ API criada para praticar backend com Node.js/TypeScript, rotas HTTP, persistênc
 |  :page_facing_up:  |
 | :----------------: |
 | API REST |
-| Arquitetura em camadas |
-| Persistência de dados |
-| Validação |
-| Rotas |
+| Autenticação JWT |
+| Persistência NoSQL |
+| Upload de arquivos |
+| Validação de DTOs |
+| Testes unitários |
+| Configuração por ambiente |
 
 </div>
 
@@ -91,7 +94,9 @@ API criada para praticar backend com Node.js/TypeScript, rotas HTTP, persistênc
 
 |                     :page_facing_up:                      |
 | :-------------------------------------------------------: |
-| Expor endpoints HTTP para consumo por aplicações clientes |
+| Organizar módulos NestJS para autenticação e dados NoSQL |
+| Persistir informações com MongoDB e Mongoose |
+| Validar payloads, proteger rotas e processar upload de arquivos |
 
 </div>
 
