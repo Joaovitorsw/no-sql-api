@@ -119,15 +119,15 @@ npm start
 | :---------------: |
 | `portfolio` |
 | `joaovitorsw` |
-| `nodejs` |
-| `api` |
-| `rest-api` |
-| `backend` |
-| `mongodb` |
 | `nestjs` |
+| `nodejs` |
+| `mongodb` |
 | `mongoose` |
+| `jwt` |
+| `file-upload` |
+| `api` |
+| `backend` |
 | `typescript` |
-| `javascript` |
 
 </div>
 
