@@ -1,73 +1,158 @@
+<div align="right">
+  
+  [![Portuguese](https://cdn-icons-png.flaticon.com/32/3022/3022546.png)](README.md)
+  
+</div>
+
+<p align="center"> 
+  <img alt="Top Language" src="https://img.shields.io/github/languages/top/Joaovitorsw/no-sql-api?color=3498db&style=for-the-badge">
+  <img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/Joaovitorsw/no-sql-api?color=3498db&style=for-the-badge&label=Ultimo%20Commit">   
+  <a href="https://github.com/Joaovitorsw">
+    <img alt="Developed by João Vitor" src="https://img.shields.io/badge/Developer-João_Vitor-%3498db?color=3498db&style=for-the-badge&label=Desenvolvedor">
+  </a>  
+  <img alt="Project License" src="https://img.shields.io/github/license/Joaovitorsw/no-sql-api?style=for-the-badge&label=licen%C3%A7a"/>   
+  <img alt="Project Status" src="https://img.shields.io/badge/status-concluido-green?style=for-the-badge&label=Status">
+</p>
+
+<h1 align="center">No Sql API</h1>
+
 <p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
+ <a href="#eye_speech_bubble-visualizar">Visualizar</a> •
+ <a href="#information_source-sobre">Sobre</a> •
+ <a href="#hammer_and_wrench-tecnologias">Tecnologias</a> • 
+ <a href="#brain-conceitos-aplicados">Conceitos</a> •
+ <a href="#sparkles-funcionalidades">Funcionalidades</a> •
+ <a href="#rocket-como-executar">Como executar</a> •
+ <a href="#label-palavras-chave">Palavras-chave</a> •
+ <a href="#boy-autor">Autor</a> •
+ <a href="#balance_scale-licença">Licença</a>
 </p>
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+---
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## :eye_speech_bubble: **Visualizar**
 
-## Description
+<div align="center">
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+Preview online não informado no repositório.
 
-## Installation
+
+</div>
+  
+---
+
+## :information_source: _Sobre_
+
+<div align="center">
+
+API criada para praticar backend com Node.js/TypeScript, rotas HTTP, persistência de dados e organização de serviços.
+
+---
+
+</div>
+
+## :hammer_and_wrench: _Tecnologias_
+
+<div align="center">
+
+| :globe_with_meridians: Stack |
+| :--------------------------: |
+| [TypeScript](https://www.typescriptlang.org/) |
+| [JavaScript ES6](https://developer.mozilla.org/en-US/docs/Web/JavaScript) |
+| [NestJS](https://nestjs.com/) |
+| [Node.js](https://nodejs.org/) |
+| [Mongoose](https://mongoosejs.com/) |
+| [MongoDB](https://www.mongodb.com/) |
+| [RxJS](https://rxjs.dev/) |
+
+</div>
+
+---
+
+## :brain: _Conceitos Aplicados_
+
+<div align="center">
+
+|  :page_facing_up:  |
+| :----------------: |
+| API REST |
+| Arquitetura em camadas |
+| Persistência de dados |
+| Validação |
+| Rotas |
+
+</div>
+
+---
+
+## :sparkles: _Funcionalidades_
+
+<div align="center">
+
+|                     :page_facing_up:                      |
+| :-------------------------------------------------------: |
+| Expor endpoints HTTP para consumo por aplicações clientes |
+
+</div>
+
+---
+
+## :rocket: _Como Executar_
 
 ```bash
-$ npm install
+npm install
+npm start
 ```
 
-## Running the app
+---
 
-```bash
-# development
-$ npm run start
+## :label: _Palavras-chave_
 
-# watch mode
-$ npm run start:dev
+<div align="center">
 
-# production mode
-$ npm run start:prod
-```
+| :mag_right: Tags |
+| :---------------: |
+| `portfolio` |
+| `joaovitorsw` |
+| `nodejs` |
+| `api` |
+| `rest-api` |
+| `backend` |
+| `mongodb` |
+| `nestjs` |
+| `mongoose` |
+| `typescript` |
+| `javascript` |
 
-## Test
+</div>
 
-```bash
-# unit tests
-$ npm run test
+---
 
-# e2e tests
-$ npm run test:e2e
+## :boy: _Autor_
 
-# test coverage
-$ npm run test:cov
-```
+<div align="center">
 
-## Support
+<a href="https://github.com/Joaovitorsw">
+ <img src="https://avatars.githubusercontent.com/u/86388366?s=400&u=d21331492a58a33c31dd248c2cac51f177622ae2&v=4"  width="100px;" alt="Profile Photo João Vitor Pereira dos Santos"/>
+ <br/>
+ <sub><b>João Vitor Pereira dos Santos</b></sub>
+</a>
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+Desenvolvido com ❤️ por João Vitor Pereira dos Santos 👋🏽 Meus Contatos!
 
-## Stay in touch
+[![Linkedin Badge](https://img.shields.io/badge/-João_Vitor-blue?style=flat-square&logo=Linkedin&logoColor=white)](https://www.linkedin.com/in/jo%C3%A3o-vitor-pereira-dos-santos-10796b169/)
+[![Github Badge](https://img.shields.io/badge/-João_Vitor-000?style=flat-square&logo=Github&logoColor=white)](https://github.com/Joaovitorsw)
+[![Outlook Badge](https://img.shields.io/badge/-João_Vitor-0078d4?style=flat-square&logo=microsoft-outlook&logoColor=white)](mailto:joaovitorswbr@gmail.com)
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+</div>
 
-## License
+---
 
-Nest is [MIT licensed](LICENSE).
+## :balance_scale: _Licença_
+
+<div align="center">
+
+Copyright ©️ 2026 [João Vitor Pereira dos Santos](https://github.com/Joaovitorsw).<br />
+Este projeto ainda não possui uma licença formal publicada.
+
+</div>
